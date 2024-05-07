@@ -31,7 +31,7 @@ class clsTask
 
     public function task()
     {
-        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status = ? AND assigned_by = ' . $_SESSION['id'] . ' ORDER BY id DESC';
+        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0 AND status = ? AND assigned_by = ' . $_SESSION['id'] . ' ORDER BY id DESC';
         $sel = $this->conn->prepare($sql);
 
         $sel->bindParam(1, $this->status);
@@ -79,15 +79,14 @@ class clsTask
 
     public function store_logs()
     {
-        $sql = 'INSERT INTO ' . $this->tblname2 . ' SET task_id=?, days=?, name=?, context=?, status=?, date_logs =?';
+        $sql = 'INSERT INTO ' . $this->tblname2 . ' SET task_id=?, name=?, context=?, status=?, date_logs =?';
         $ins = $this->conn->prepare($sql);
 
         $ins->bindParam(1, $this->task_id);
-        $ins->bindParam(2, $this->days);
-        $ins->bindParam(3, $this->name);
-        $ins->bindParam(4, $this->context);
-        $ins->bindParam(5, $this->status);
-        $ins->bindParam(6, $this->date_logs);
+        $ins->bindParam(2, $this->name);
+        $ins->bindParam(3, $this->context);
+        $ins->bindParam(4, $this->status);
+        $ins->bindParam(5, $this->date_logs);
 
         return $ins->execute() ? true : false;
     }
@@ -99,6 +98,43 @@ class clsTask
 
         $sel->execute();
         return $sel;
+    }
+    public function last_logs_byid()
+    {
+        $sql = 'SELECT `date_logs` as last_logs FROM ' . $this->tblname2 . ' WHERE task_id = ? ORDER BY id DESC LIMIT 1';
+        $sel = $this->conn->prepare($sql);
+
+        $sel->bindParam(1, $this->task_id);
+        $sel->execute();
+        return $sel;
+    }
+    public function first_logs_byid()
+    {
+        $sql = 'SELECT `date_logs` as first_logs FROM ' . $this->tblname2 . ' WHERE task_id = ? ORDER BY id ASC LIMIT 1';
+        $sel = $this->conn->prepare($sql);
+
+        $sel->bindParam(1, $this->task_id);
+        $sel->execute();
+        return $sel;
+    }
+
+    public function get_date_createdTask()
+    {
+        $sql = 'SELECT created_at FROM ' . $this->tblname . ' WHERE id = ?';
+        $sel = $this->conn->prepare($sql);
+        $sel->bindParam(1, $this->id);
+        $sel->execute();
+        return $sel;
+    }
+
+    public function upd_date_createdTask()
+    {
+        $sql = 'UPDATE ' . $this->tblname . ' SET created_at = ? WHERE id = ?';
+        $upd = $this->conn->prepare($sql);
+        $upd->bindParam(1, $this->created_at);
+        $upd->bindParam(2, $this->id);
+
+        return $upd->execute() ? true : false;
     }
 
     public function logs()
@@ -130,6 +166,25 @@ class clsTask
         $sel->execute();
         return $sel;
     }
+    public function get_prev_date_logs()
+    {
+        $sql = 'SELECT date_logs as date_logs_prev FROM ' . $this->tblname2 . ' WHERE id = ? - 1';
+        $sel = $this->conn->prepare($sql);
+
+        $sel->bindParam(1, $this->id);
+        $sel->execute();
+        return $sel;
+    }
+    public function delete_task()
+    {
+        $sql = 'UPDATE ' . $this->tblname . ' SET status = ? WHERE id = ?';
+        $upd = $this->conn->prepare($sql);
+
+        $upd->bindParam(1, $this->status);
+        $upd->bindParam(2, $this->id);
+
+        return $upd->execute() ? true : false;
+    }
 
     public function upd_date_logs()
     {
@@ -148,6 +203,27 @@ class clsTask
         $upd = $this->conn->prepare($sql);
 
         $upd->bindParam(1, $this->urgency);
+        $upd->bindParam(2, $this->id);
+
+        return $upd->execute() ? true : false;
+    }
+
+    public function get_user_id()
+    {
+        $sql = 'SELECT user_id FROM ' . $this->tblname . ' WHERE id = ?';
+        $sel = $this->conn->prepare($sql);
+
+        $sel->bindParam(1, $this->id);
+        $sel->execute();
+        return $sel;
+    }
+
+    public function upd_task_user_id()
+    {
+        $sql = 'UPDATE ' . $this->tblname . ' SET user_id = ? WHERE id = ?';
+        $upd = $this->conn->prepare($sql);
+
+        $upd->bindParam(1, $this->user_id);
         $upd->bindParam(2, $this->id);
 
         return $upd->execute() ? true : false;

@@ -6,22 +6,20 @@ $db = $database->connect();
 
 $logs = new clsTask($db);
 
-$last = $logs->last_logs();
-while ($row = $last->fetch(PDO::FETCH_ASSOC)) {
-    $previousDate = $row['last_logs'];
-}
+
 $currentDate = date('Y-m-d'); // Get current date
-// Set date_logs to $_POST['date-logs'] if it's defined and not empty, otherwise use $currentDate
-$dateLogs = (!empty($_POST['date-logs']) && $_POST['date-logs'] !== 'undefined') ? $_POST['date-logs'] : $currentDate;
-$previousDateTime = new DateTime($previousDate);
-$currentDateTime = new DateTime($currentDate);
-$timeDifference = $previousDateTime->diff($currentDateTime); // Calculate difference
+
+if (isset($_POST['date-logs'])) {
+    $date_log = date('Y-m-d', strtotime($_POST['date-logs']));
+    // Set date_logs to $date_log if it's defined and not empty, otherwise use $currentDate
+    $dateLogs = (!empty($_POST['date-logs']) && $_POST['date-logs'] !== 'undefined') ? $date_log : $currentDate;
+}
+
 $logs->task_id = $_POST['task_id'];
-$logs->days = $timeDifference->format('%d days');
 $logs->name = $_SESSION['id'];
 $logs->context = $_POST['context'];
 $logs->status = 1;
-$logs->date_logs = $dateLogs;
+$logs->date_logs = isset($_POST['date-logs']) ? $dateLogs : $currentDate;
 $store = $logs->store_logs();
 
 echo $store ? 1 : 0;

@@ -1,4 +1,8 @@
-<?php session_start(); ?>
+<?php session_start();
+if (!isset($_SESSION['fullname'])) {
+    header('Location: controller/logout.php');
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 

@@ -33,7 +33,7 @@ class clsUsers
 
     public function user_byid()
     {
-        $sql = 'SELECT CONCAT(firstname, " ", lastname) as fullname FROM ' . $this->tblname . ' WHERE id = ?';
+        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE id = ?';
         $sel = $this->conn->prepare($sql);
         $sel->bindParam(1, $this->id);
         $sel->execute();

@@ -71,16 +71,16 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="d-flex justify-content-between">
+                <p class="m-0 p-0">Date Created: <i class="fa-regular fa-calendar"> <span style="font-size: small;" id="date_created"></span></i></p>
+                <div class="d-flex justify-content-between m-0 p-0">
                     <p>Completion Date: <i class="fa-regular fa-calendar"> <span style="font-size: small;" id="timeline"></span></i></p>
-                    <p>Urgency: <select name="urgency" id="urgency" style="<?php echo ($_SESSION['access_type'] != 3) ? 'pointer-events:none;' : ''; ?>">
+                    <p>Urgency: <select name="urgency" id="urgency" style="<?php echo ($_SESSION['access_type'] == 2) ? 'pointer-events:none;' : ''; ?>">
                             <option value="0" selected></option>
                             <option value="1">Low</option>
                             <option value="2">Mid</option>
                             <option value="3">High</option>
                         </select></p>
                 </div>
-
                 <div class="card-footer" style="border:none; background-color:transparent;">
                     <?php
                     if ($_SESSION['access_type'] == 3) {
@@ -113,7 +113,7 @@
                         <textarea name="description" id="description" class="form-control mb-3" placeholder="Description"></textarea>
                         <div class="input-group flex-nowrap mb-3">
                             <span class="input-group-text" id="addon-wrapping"><i class="fa-solid fa-calendar-day"></i> Due Date</span>
-                            <input type="date" class="form-control" name="due-date" placeholder="" required>
+                            <input type="date" class="form-control" name="due-date" id="due-date" min="0" placeholder="" required>
                         </div>
                         <select name="urgency" id="urgency" class="form-control">
                             <option value="0" disabled selected>Select Urgency</option>
@@ -159,10 +159,10 @@
             <form id="cus_logsForm">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h6>Enter custom date logs?</h6>
+                        <h6>Enter custom date logs</h6>
                     </div>
                     <div class="modal-body">
-                        <input type="date" class="form-control" name="date-logs" id="date-logs">
+                        <input type="text" class="form-control" name="date-logs" id="date-logs" placeholder="mm/dd/yyyy">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-warning" id="skip">Skip</button>
@@ -181,11 +181,26 @@
                         <h6>Enter custom date logs?</h6>
                     </div>
                     <div class="modal-body">
-                        <input type="date" class="form-control" name="upd-date-logs" id="upd-date-logs">
+                        <input type="text" class="form-control" name="upd-date-logs" id="upd-date-logs" placeholder="mm/dd/yyyy">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="cancel">cancel</button>
                         <button type="button" class="btn btn-success" id="update_logs">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- edit-date-task created -->
+    <div class="modal fade" id="edit_created_date_modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form id="date_created_taskForm">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <input type="text" class="form-control" name="task_created_at" id="task_created_at" placeholder="mm/dd/yyyy" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success" id="update_task_created">Update</button>
                     </div>
                 </div>
             </form>
@@ -202,6 +217,26 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Re-assign Modal -->
+    <div class="modal fade" id="reassignModal" tabindex="-1" aria-labelledby="UserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="UserModalLabel">Assign to</h1>
+                </div>
+                <div class="modal-body" id="Usermodal-body">
+                    <input type="text" id="taskuser_id" hidden>
+                    <select name="users2" id="users2" class="form-control">
+
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="upd_reassign">Update</button>
                 </div>
             </div>
         </div>

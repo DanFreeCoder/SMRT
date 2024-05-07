@@ -41,6 +41,7 @@
                 <div class="card-header" style="background-color:transparent; position:relative;">
                     <div class="d-flex justify-content-between mb-0">
                         <i class="fa-solid fa-bars-progress"> <span style="font-size: small;" id="task_title"></span></i>
+                        <input type="text" id="assigner" hidden>
                         <span><i class="fa-solid fa-ranking-star"></i> <select name="status" id="status" style="pointer-events:none;">
                                 <option value="0" selected></option>
                                 <option value="1">Active</option>
@@ -67,6 +68,7 @@
                         </tbody>
                     </table>
                 </div>
+                <p class="m-0 p-0">Date Created: <i class="fa-regular fa-calendar"> <span style="font-size: small;" id="date_created"></span></i></p>
                 <div class="d-flex justify-content-between">
                     <p>Completion Date: <i class="fa-regular fa-calendar"> <span style="font-size: small;" id="timeline"></span></i></p>
                     <p>Urgency: <select name="urgency" id="urgency" style="pointer-events:none;">

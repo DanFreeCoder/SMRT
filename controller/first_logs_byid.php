@@ -6,8 +6,8 @@ $db = $database->connect();
 
 $logs = new clsTask($db);
 
-$logs->date_logs = date('Y-m-d', strtotime($_POST['upd_date_logs']));
-$logs->id = $_POST['id'];
-$log = $logs->upd_date_logs();
-
-echo $logs ? 1 : 0;
+$logs->task_id = $_POST['task_id'];
+$log = $logs->first_logs_byid();
+while ($row = $log->fetch(PDO::FETCH_ASSOC)) {
+    echo $row['first_logs'];
+}

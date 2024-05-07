@@ -6,8 +6,8 @@ $db = $database->connect();
 
 $logs = new clsTask($db);
 
-$logs->date_logs = date('Y-m-d', strtotime($_POST['upd_date_logs']));
+$logs->status = 0;
 $logs->id = $_POST['id'];
-$log = $logs->upd_date_logs();
+$delete = $logs->delete_task();
 
-echo $logs ? 1 : 0;
+echo $delete ? 1 : 0;
