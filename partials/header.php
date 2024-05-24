@@ -51,10 +51,6 @@ if (!isset($_SESSION['fullname'])) {
         button {
             font-family: Arial, Helvetica, sans-serif;
         }
-
-        th .penbtn:nth-last-child {
-            display: none;
-        }
     </style>
 </head>
 
@@ -67,7 +63,7 @@ if (!isset($_SESSION['fullname'])) {
             <input type="text" value="<?php echo $_SESSION['id'] ?>" id="session_id" hidden>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="account.php"><?php echo $_SESSION['fullname'] ?></a></li>
+                    <li class="nav-item"><a class="nav-link" style="text-decoration:underline;" href="account.php"><?php echo $_SESSION['fullname'] ?></a></li>
                     <li class="nav-item">
                         <a class="nav-link" href="controller/logout.php">Log out</a>
                     </li>

@@ -35,7 +35,7 @@ if (!isset($_SESSION['fullname'])) {
             <div class="col-md-5">
                 <!-- Adjust the column size as needed -->
                 <div class="card shadow">
-                    <h1 class="card-header text-center text-light" style="background-color: #6200ee;"><a href="<?php echo $_SESSION['access_type'] == 2 ? 'user.php' : 'manager.php' ?>" class="text-light">SMRT</a> | Account</h1>
+                    <h1 class="card-header text-center text-light" style="background-color: #6200ee;"><a href="<?php echo $_SESSION['access_type'] == 2 ? 'user.php' : 'manager.php' ?>" class="text-light"><i class="fa-solid fa-arrow-left"></i></a> | Account</h1>
                     <div class="card-body">
                         <form id="accountForm">
                             <div class="form-group row">

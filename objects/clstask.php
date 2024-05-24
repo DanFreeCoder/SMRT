@@ -31,10 +31,9 @@ class clsTask
 
     public function task()
     {
-        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0 AND status = ? AND assigned_by = ' . $_SESSION['id'] . ' ORDER BY id DESC';
+        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0 AND assigned_by = ' . $_SESSION['id'] . ' ORDER BY id DESC';
         $sel = $this->conn->prepare($sql);
 
-        $sel->bindParam(1, $this->status);
         $sel->execute();
         return $sel;
     }
@@ -52,6 +51,16 @@ class clsTask
     {
         $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0 AND assigned_by = ' . $_SESSION['id'] . ' ORDER BY id DESC';
         $sel = $this->conn->prepare($sql);
+
+        $sel->execute();
+        return $sel;
+    }
+    public function task_filter_by()
+    {
+        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0 AND assigned_by = ' . $_SESSION['id'] . ' AND user_id = ? ORDER BY id DESC';
+        $sel = $this->conn->prepare($sql);
+
+        $sel->bindParam(1, $this->user_id);
 
         $sel->execute();
         return $sel;
@@ -227,5 +236,22 @@ class clsTask
         $upd->bindParam(2, $this->id);
 
         return $upd->execute() ? true : false;
+    }
+
+    public function automatic_email_to_assigner()
+    {
+        $sql = 'SELECT t.timeline, t.task, t.add_comment, CONCAT(u.firstname, " ", u.lastname) as fullname, u.email FROM task t JOIN users u ON u.id = t.assigned_by';
+        $sel = $this->conn->prepare($sql);
+
+        $sel->execute();
+        return $sel;
+    }
+    public function automatic_email_to_handler()
+    {
+        $sql = 'SELECT t.timeline, t.task, t.add_comment, CONCAT(u.firstname, " ", u.lastname) as fullname, u.email FROM task t JOIN users u ON u.id = t.user_id';
+        $sel = $this->conn->prepare($sql);
+
+        $sel->execute();
+        return $sel;
     }
 }

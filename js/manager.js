@@ -2,6 +2,29 @@ $(document).ready(function () {
 
     "use strict";
 
+    // display task
+    getTask();
+
+    // filter staff
+    $.ajax({
+        type: 'post',
+        url: 'controller/users.php',
+        dataType: 'json',
+        success: function (data) {
+            $('#filter').html('')
+            $('#filter').html(`<option value="0" disabled selected>FILTER HANDLER</option>`);
+            data.forEach((d) => {
+                $('#filter').append(`<option value="${d.id}">${d.firstname} ${d.lastname}</option>`);
+            })
+        }
+    });
+
+    // filter by staff
+    $('#filter').on('change', function () {
+        const id = $(this).val();
+        filterTaskby(id)
+    });
+
 
     // disable the past date in due date input date field
     var dtToday = new Date();
@@ -24,34 +47,111 @@ $(document).ready(function () {
         'ordering': false,
         pageLength: 5
     });
-    // display task
-    getActiveTask();
-    getCompleteTask();
-    getAllTask();
+
+    $('#reset').on('click', function () {
+        location.reload(true)
+    });
 
     function reset() {
         $('.todo-all').html('')
         $('.todo-active').html('')
         $('.todo-complete').html('')
         // display task
-        getActiveTask();
-        getCompleteTask();
-        getAllTask();
+        getTask();
     }
 
-    function getActiveTask() {
-        const status = 1;
+    function getTask() {
         $.ajax({
             type: 'post',
             url: 'controller/task.php',
+            dataType: 'json',
+            success: function (data) {
+                $('.todo-active').html('')
+                $('.todo-complete').html('')
+                $('.todo-all').html('')
+                data.forEach((d) => {
+                    if (d.status == 1) { // active task
+                        $('.todo-active').append(`
+                        <div class="todo-item" data-info="${d.id}">
+                            <div class="d-flex justify-content-between">
+                                <div class="checker"><span class=""><input type="checkbox" value="${d.id}" ${d.status == 2 ? 'checked' : ''}></span></div>
+                                <span>${d.task_name}</span>
+                                <a href="javascript:void(0)" data-bs-toggle="dropdown" ><i class="fa-solid fa-ellipsis-vertical"></i>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item re-assign" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-user-group text-warning"></i> Reassign</a></li>
+                                        <li><a class="dropdown-item edit-created_date" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-file-pen text-success"></i> Edit created date</a></li>
+                                        <li><a class="dropdown-item remove-task" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-trash text-danger"></i> Remove</a></li>
+                                    </ul>
+                                </a>
+                            </div>
+                        </div>`);
+                    } else if (d.status == 2) { //complete task
+                        $('.todo-complete').append(`
+                        <div class="todo-item complete" data-info="${d.id}">
+                                <div class="checker"><span class=""><input type="checkbox" value="${d.id}" ${d.status == 2 ? 'checked' : ''}></span></div>
+                                <span>${d.task_name}</span>
+                        </div>`);
+                    }
+
+                    // all task
+                    $('.todo-all').append(`
+                    <div class="todo-item ${d.status == 2 ? 'complete' : ''}" data-info="${d.id}">
+                        <div class="d-flex justify-content-between">
+                            <div class="checker"><span class=""><input type="checkbox" value="${d.id}" ${d.status == 2 ? 'checked' : ''}></span></div>
+                            <span>${d.task_name}</span>
+                            <a href="javascript:void(0)" data-bs-toggle="dropdown" ><i class="fa-solid fa-ellipsis-vertical"></i>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item re-assign" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-user-group text-warning"></i> Reassign</a></li>
+                                    <li><a class="dropdown-item edit-created_date" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-file-pen text-success"></i> Edit created date</a></li>
+                                    <li><a class="dropdown-item remove-task" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-trash text-danger"></i> Remove</a></li>
+                                </ul>
+                            </a>
+                        </div>
+                    </div>`);
+
+                })
+            }
+        });
+    }
+
+    function filterTaskby(id) {
+        $.ajax({
+            type: 'post',
+            url: 'controller/task_filter_by.php',
             data: {
-                status: status
+                id: id,
             },
             dataType: 'json',
             success: function (data) {
+                $('.todo-active').html('')
+                $('.todo-complete').html('')
+                $('.todo-all').html('')
                 data.forEach((d) => {
-                    $('.todo-active').append(`
+                    if (d.status == 1) { // active task
+                        $('.todo-active').append(`
                         <div class="todo-item" data-info="${d.id}">
+                            <div class="d-flex justify-content-between">
+                                <div class="checker"><span class=""><input type="checkbox" value="${d.id}"></span></div>
+                                <span>${d.task_name}</span>
+                                <a href="javascript:void(0)" data-bs-toggle="dropdown" ><i class="fa-solid fa-ellipsis-vertical"></i>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item re-assign" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-user-group text-warning"></i> Reassign</a></li>
+                                        <li><a class="dropdown-item edit-created_date" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-file-pen text-success"></i> Edit created date</a></li>
+                                        <li><a class="dropdown-item remove-task" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-trash text-danger"></i> Remove</a></li>
+                                    </ul>
+                                </a>
+                            </div>
+                        </div>`);
+                    } else if (d.status == 2) { // complete task
+                        $('.todo-complete').append(`
+                        <div class="todo-item complete" data-info="${d.id}">
+                                <div class="checker"><span><input type="checkbox" value="${d.id}" checked /></span></div>
+                                <span>${d.task_name}</span>
+                        </div>`);
+                    }
+                    // all task
+                    $('.todo-all').append(`
+                        <div class="todo-item ${d.status == 2 ? 'complete' : ''}" data-info="${d.id}">
                             <div class="d-flex justify-content-between">
                                 <div class="checker"><span class=""><input type="checkbox" value="${d.id}" ${d.status == 2 ? 'checked' : ''}></span></div>
                                 <span>${d.task_name}</span>
@@ -70,53 +170,7 @@ $(document).ready(function () {
     }
 
 
-    function getCompleteTask() {
-        const status2 = 2;
-        $.ajax({
-            type: 'post',
-            url: 'controller/task.php',
-            data: {
-                status: status2
-            },
-            dataType: 'json',
-            success: function (data) {
-                data.forEach((d) => {
-                    $('.todo-complete').append(`
-                    <div class="todo-item complete" data-info="${d.id}">
-                            <div class="checker"><span class=""><input type="checkbox" value="${d.id}" ${d.status == 2 ? 'checked' : ''}></span></div>
-                            <span>${d.task_name}</span>
-                    </div>`);
-                })
-            }
-        });
-    }
 
-    function getAllTask() {
-        // ALL TASK
-        $.ajax({
-            type: 'post',
-            url: 'controller/all_task.php',
-            dataType: 'json',
-            success: function (data) {
-                data.forEach((d) => {
-                    $('.todo-all').append(`
-                    <div class="todo-item ${d.status == 2 ? 'complete' : ''}" data-info="${d.id}">
-                        <div class="d-flex justify-content-between">
-                            <div class="checker"><span class=""><input type="checkbox" value="${d.id}" ${d.status == 2 ? 'checked' : ''}></span></div>
-                            <span>${d.task_name}</span>
-                            <a href="javascript:void(0)" data-bs-toggle="dropdown" ><i class="fa-solid fa-ellipsis-vertical"></i>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item re-assign" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-user-group text-warning"></i> Reassign</a></li>
-                                    <li><a class="dropdown-item edit-created_date" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-file-pen text-success"></i> Edit created date</a></li>
-                                    <li><a class="dropdown-item remove-task" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-trash text-danger"></i> Remove</a></li>
-                                </ul>
-                            </a>
-                        </div>
-                    </div>`);
-                })
-            }
-        });
-    }
 
     function getlogs_data(task_id) {
         $.ajax({
@@ -127,7 +181,7 @@ $(document).ready(function () {
             success: function (data) {
                 $('#task_title').text(data[0].task_name)
                 $('#timeline').text(new Date(data[0].timeline).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }));
-                $('#status').val(data[0].status)
+                $('#status').text(data[0].status == 1 ? 'Active' : 'Complete')
                 $('#urgency').val(data[0].urgency)
                 $('#desctext').val(data[0].add_comment)
                 $('#date_created').text(new Date(data[0].created_at).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }))
@@ -154,37 +208,51 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (data) {
                 $('.logs-data').html('');
-                $.ajax({
-                    type: 'post',
-                    url: 'controller/first_logs_byid.php',
-                    data: { task_id: task_id },
-                    success: function (resdata) {
-                        var firstlog = resdata;
-                        data.forEach((d) => {
-                            // Calculate the time difference in milliseconds
-                            var timeDifference = new Date(d.date_logs) - new Date(firstlog);
-                            // Convert milliseconds to days (assuming 1 day = 24 * 60 * 60 * 1000 milliseconds)
-                            var Days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-                            var formattedDate = new Date(d.date_logs).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
-                            $('.logs-data').append(
-                                `<tr>
-                                    ${$('.session-data').val() == 3 ? `<td><a href="javascript:void(0)" class="text-warning edit-logs" value="${d.id}"><i class="fa-solid fa-pen penbtn"></i></a></td>` : ''}
-                                    <td>${formattedDate}</td>
-                                    <td>${d.name}</td>
-                                    <td>${d.context}</td>
-                                    <td>${Days}${Days > 1 ? ' Days' : ' Day'}</td>
-                                </tr>`
-                            )
-                        });
+                for (var i = 0; i < data.length; i++) {
+                    var d = data[i];
+                    // Calculate the index of the next row
+                    var nextIndex = i + 1;
+                    // Check if the next row exists
+                    if (nextIndex < data.length) {
+                        var nextDateLogs = data[nextIndex].date_logs;
+                        // Calculate the time difference in milliseconds
+                        var timeDifference = new Date(nextDateLogs) - new Date(d.date_logs);
+                        var absoluteTimeDifference = Math.abs(timeDifference);
+                        // Convert milliseconds to days (assuming 1 day = 24 * 60 * 60 * 1000 milliseconds)
+                        var Days = Math.floor(absoluteTimeDifference / (1000 * 60 * 60 * 24));
+                        var formattedDate = new Date(d.date_logs).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+                        $('.logs-data').append(
+                            `<tr>
+                                ${$('.session-data').val() == 3 ? `<td><a href="javascript:void(0)" class="text-warning edit-logs" value="${d.id}"><i class="fa-solid fa-pen penbtn"></i></a></td>` : ''}
+                                <td>${formattedDate}</td>
+                                <td>${d.name}</td>
+                                <td>${d.context}</td>
+                                <td>${Days}${Days > 1 ? ' Days' : ' Day'}</td>
+                            </tr>`
+                        );
                     }
-                })
-
+                }
+                // Append the last row
+                if (data.length > 0) {
+                    var d = data[data.length - 1];
+                    var formattedDate = new Date(d.date_logs).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+                    $('.logs-data').append(
+                        `<tr>
+                            ${$('.session-data').val() == 3 ? `<td><a href="javascript:void(0)" class="text-warning edit-logs" value="${d.id}"><i class="fa-solid fa-pen penbtn"></i></a></td>` : ''}
+                            <td>${formattedDate}</td>
+                            <td>${d.name}</td>
+                            <td>${d.context}</td>
+                            <td>0 Day</td>
+                        </tr>`
+                    );
+                }
                 // Hide the last penbtn icon
                 $('.logs-data tr:last').find('.penbtn').hide();
             }
-        })
-    }
+        });
 
+    }
+    //dad?
     $(document).on('click', '.edit-created_date', function (e) {
         e.preventDefault();
         const id = $(this).attr('value');
@@ -224,6 +292,7 @@ $(document).ready(function () {
     $(document).on('change', '[type="checkbox"]', function (e) {
         e.preventDefault();
         const id = $(this).val()
+        const filter_id = $('#filter option:selected').val()
         // complete
         if ($(this).is(':checked')) {
             $.ajax({
@@ -231,8 +300,17 @@ $(document).ready(function () {
                 url: 'controller/upd_task.php',
                 data: { id: id, status: 2 },
                 success: function (res) {
-                    res > 0 ? reset() : '';
-                    getlogs_data(id)
+                    if (res > 0) {
+                        if (filter_id > 0) {
+                            filterTaskby($('#filter option:selected').val())
+                            getlogs_data(id)
+                        } else {
+                            getTask();
+                            getlogs_data(id)
+                        }
+
+                    }
+
                 }
             })
         } else {
@@ -242,8 +320,16 @@ $(document).ready(function () {
                 url: 'controller/upd_task.php',
                 data: { id: id, status: 1 },
                 success: function (res) {
-                    res > 0 ? reset() : '';
-                    getlogs_data(id)
+                    if (res > 0) {
+                        if (filter_id > 0) {
+                            filterTaskby($('#filter option:selected').val())
+                            getlogs_data(id)
+                        } else {
+                            getTask();
+                            getlogs_data(id)
+                        }
+
+                    }
                 }
             })
         }
@@ -267,7 +353,8 @@ $(document).ready(function () {
                 })
             }
         });
-    })
+    });
+
     // open modal
     $(document).on('click', '#assignbtn', () => $('#UserModal').modal('show'))
 
@@ -293,12 +380,12 @@ $(document).ready(function () {
                             data.forEach((d) => {
                                 var email = d.email;
                                 var fullname = d.fullname;
+                                const timeline = new Date($('#due-date').val()).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' })
                                 var notification = `I'm reaching out to inform you that you have been assigned a new task. The details of the task are as follows:<br><br>
                                Task Name: ${$('#task_name').val()} <br>
                                Description: ${$('#description').val()} <br>
-                               Deadline: ${$('#due-date').val()} <br><br>
-                               Thank you for your dedication and commitment.
-                               `;
+                               Deadline: ${timeline} <br><br>
+                               Thank you for your dedication and commitment.`;
                                 var detailsData = `fullname=${fullname}&notification=${notification}&email=${email}`;
                                 $.ajax({
                                     type: 'post',
@@ -308,6 +395,7 @@ $(document).ready(function () {
                                         if (res > 0) {
                                             console.log('emailed')
                                             Toaster('success', 'Task has been add successfully.')
+                                            $('#exampleModal').modal('hide')
                                             reset();
                                         }
                                     }
@@ -546,15 +634,28 @@ $(document).ready(function () {
     $(document).on('click', '.remove-task', function (e) {
         e.preventDefault();
         const id = $(this).attr('value');
-        $.ajax({
-            type: 'post',
-            url: 'controller/del_task.php',
-            data: { id: id },
-            success: function (res) {
-                res > 0 ? Toaster('success', 'The task has been removed successfully.') : Toaster('error', 'Action failed.');
-                reset();
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'post',
+                    url: 'controller/del_task.php',
+                    data: { id: id },
+                    success: function (res) {
+                        res > 0 ? Swal.fire({ title: "Deleted!", text: "Task has been deleted.", icon: "success" }) : '';
+                        reset();
+                    }
+                })
+
             }
-        })
+        });
     })
 
 
@@ -598,8 +699,38 @@ $(document).ready(function () {
             url: 'controller/upd_user_id.php',
             data: mydata,
             success: function (res) {
-                res > 0 ? Toaster('success', 'Assigned Successfully') : Toaster('error', 'Assign Fail');
-                $('#reassignModal').modal('hide')
+                $.ajax({
+                    type: 'post',
+                    url: 'controller/user_byid.php',
+                    data: { id: user_id },
+                    dataType: 'json',
+                    success: function (data) {
+                        data.forEach((d) => {
+                            var email = d.email;
+                            var fullname = d.fullname;
+                            const timeline = new Date($('#timeline').text()).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' })
+                            var notification = `I'm reaching out to inform you that a task has been <b>re-assigned</b> to you. The details of the task are as follows:<br><br>
+                           Task Name: ${$('#task_title').text()} <br>
+                           Description: ${$('#desctext').val()} <br>
+                           Deadline: ${timeline} <br><br>
+                           Thank you for your dedication and commitment.`;
+                            var detailsData = `fullname=${fullname}&notification=${notification}&email=${email}`;
+                            $.ajax({
+                                type: 'post',
+                                url: 'controller/emailTo.php',
+                                data: detailsData,
+                                success: function (res) {
+                                    if (res > 0) {
+                                        res > 0 ? Toaster('success', 'Assigned Successfully') : Toaster('error', 'Assign Fail');
+                                        $('#reassignModal').modal('hide')
+                                        reset();
+                                        getlogs_data(task_id)
+                                    }
+                                }
+                            })
+                        })
+                    }
+                })
             }
         });
     });

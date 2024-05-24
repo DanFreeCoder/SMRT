@@ -1,4 +1,7 @@
 <?php include_once 'partials/header.php'; ?>
+<?php if ($_SESSION['access_type'] == 2) {
+    header("Location:controller/logout.php");
+} ?>
 <!-- Page content-->
 <div class="main-container" style="margin-top: 80px; overflow-x:hidden;">
     <input type="text" class="session-data" value="<?php echo $_SESSION['access_type']; ?>" hidden>
@@ -7,10 +10,17 @@
             <!-- dashboard section -->
             <div class="row">
                 <div class="card card-white">
-                    <div class="card-header" style="background-color:transparent; border:none;">
+                    <div class="card-header m-0 p-0" style="background-color:transparent; border:none;">
                         <div class="btn custom-btn form-control" id="newTask" data-bs-target="#exampleModal"><i class="fa-solid fa-plus"></i> New Task</div>
+                        <div class="row">
+                            <div class="col-md-2 m-0">
+                                <button class="btn btn-sm btn-success" id="reset">RESET</button>
+                            </div>
+                            <div class="col-md-10 m-0 pl-0"><select name="filter" id="filter" class="form-control m-0" style="font-size: small;">
+                                </select></div>
+                        </div>
                     </div>
-                    <div class="card-body" style="height: 450px; max-height:450px; overflow-y: auto;">
+                    <div class="card-body" id="category" style="height: 450px; max-height:450px; overflow-y: auto;">
                         <ul class="nav justify-content-center">
                             <li class="nav-item">
                                 <a class="nav-link active" id="btn-all" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#home-tab-pane">All</a>
@@ -44,11 +54,7 @@
                 <div class="card-header" style="background-color:transparent; position:relative;">
                     <div class="d-flex justify-content-between mb-0">
                         <i class="fa-solid fa-bars-progress"> <span style="font-size: small;" id="task_title"></span></i>
-                        <span><i class="fa-solid fa-ranking-star"></i> <select name="status" id="status" style="pointer-events:none;">
-                                <option value="0" selected></option>
-                                <option value="1">Active</option>
-                                <option value="2">Completed</option>
-                            </select></span>
+                        <span><i class="fa-solid fa-ranking-star"></i> <span name="status" id="status" style="pointer-events:none;"></span></span>
                     </div>
                 </div>
                 <div class="d-flex justify-content-between mb-0">

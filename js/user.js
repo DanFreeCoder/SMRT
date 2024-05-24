@@ -90,7 +90,7 @@ $(document).ready(function () {
             success: function (data) {
                 $('#task_title').text(data[0].task_name)
                 $('#timeline').text(new Date(data[0].timeline).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }))
-                $('#status').val(data[0].status)
+                $('#status').text(data[0].status == 1 ? 'Active' : 'Complete')
                 $('#assigner').val(data[0].assigned_by)
                 $('#urgency').val(data[0].urgency)
                 $('#desctext').val(data[0].add_comment)
@@ -118,32 +118,46 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (data) {
                 $('.logs-data').html('');
-
-                $.ajax({
-                    type: 'post',
-                    url: 'controller/first_logs_byid.php',
-                    data: { task_id: task_id },
-                    success: function (resdata) {
-                        var firstlog = resdata;
-                        data.forEach((d) => {
-                            // Calculate the time difference in milliseconds
-                            var timeDifference = new Date(d.date_logs) - new Date(firstlog);
-                            // Convert milliseconds to days (assuming 1 day = 24 * 60 * 60 * 1000 milliseconds)
-                            var Days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-                            var formattedDate = new Date(d.date_logs).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
-                            $('.logs-data').append(
-                                `<tr>
-                                    <td>${formattedDate}</td>
-                                    <td>${d.name}</td>
-                                    <td>${d.context}</td>
-                                    <td>${Days}${Days > 1 ? ' Days' : ' Day'}</td>
-                                </tr>`
-                            )
-                        });
+                for (var i = 0; i < data.length; i++) {
+                    var d = data[i];
+                    // Calculate the index of the next row
+                    var nextIndex = i + 1;
+                    // Check if the next row exists
+                    if (nextIndex < data.length) {
+                        var nextDateLogs = data[nextIndex].date_logs;
+                        // Calculate the time difference in milliseconds
+                        var timeDifference = new Date(nextDateLogs) - new Date(d.date_logs);
+                        var absoluteTimeDifference = Math.abs(timeDifference);
+                        // Convert milliseconds to days (assuming 1 day = 24 * 60 * 60 * 1000 milliseconds)
+                        var Days = Math.floor(absoluteTimeDifference / (1000 * 60 * 60 * 24));
+                        var formattedDate = new Date(d.date_logs).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+                        $('.logs-data').append(
+                            `<tr>
+                                <td>${formattedDate}</td>
+                                <td>${d.name}</td>
+                                <td>${d.context}</td>
+                                <td>${Days}${Days > 1 ? ' Days' : ' Day'}</td>
+                            </tr>`
+                        );
                     }
-                })
+                }
+                // Append the last row
+                if (data.length > 0) {
+                    var d = data[data.length - 1];
+                    var formattedDate = new Date(d.date_logs).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+                    $('.logs-data').append(
+                        `<tr>
+                            <td>${formattedDate}</td>
+                            <td>${d.name}</td>
+                            <td>${d.context}</td>
+                            <td>0 Day</td>
+                        </tr>`
+                    );
+                }
+                // Hide the last penbtn icon
+                $('.logs-data tr:last').find('.penbtn').hide();
             }
-        })
+        });
     }
 
     $('#newTask').on('click', () => $('#exampleModal').modal('show'));

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.8/dist/sweetalert2.min.css">
     <!-- bootstrap general -->
     <link rel="stylesheet" href="assets/bootstrap/bootstrap.min.css">
-    <title>Document</title>
+    <title>Log in | SMRT</title>
     <style>
         * {
             font-family: Arial, Helvetica, sans-serif;

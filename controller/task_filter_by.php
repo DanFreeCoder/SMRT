@@ -7,7 +7,8 @@ $data = array();
 
 $task = new clsTask($db);
 
-$task_detail = $task->task();
+$task->user_id = $_POST['id'];
+$task_detail = $task->task_filter_by();
 while ($row = $task_detail->fetch(PDO::FETCH_ASSOC)) {
     $id = $row['id'];
     $task_name = $row['task'];

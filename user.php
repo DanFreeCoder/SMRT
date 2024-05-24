@@ -1,4 +1,7 @@
 <?php include_once 'partials/header.php'; ?>
+<?php if ($_SESSION['access_type'] != 2) {
+    header("Location:controller/logout.php");
+} ?>
 <!-- Page content-->
 <div class="main-container" style="margin-top: 80px; overflow-x:hidden;">
     <div class="row">
@@ -42,11 +45,7 @@
                     <div class="d-flex justify-content-between mb-0">
                         <i class="fa-solid fa-bars-progress"> <span style="font-size: small;" id="task_title"></span></i>
                         <input type="text" id="assigner" hidden>
-                        <span><i class="fa-solid fa-ranking-star"></i> <select name="status" id="status" style="pointer-events:none;">
-                                <option value="0" selected></option>
-                                <option value="1">Active</option>
-                                <option value="2">Completed</option>
-                            </select></span>
+                        <span><i class="fa-solid fa-ranking-star"></i> <span name="status" id="status" style="pointer-events:none;"></span></span>
                     </div>
                 </div>
                 <div class="d-flex justify-content-between mb-0">
