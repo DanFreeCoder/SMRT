@@ -17,7 +17,6 @@ while ($row = $email_to_assigner->fetch(PDO::FETCH_ASSOC)) {
     if ($row['timeline'] == $currentDate || $warnDate == $currentDate) {
         $from = "system.administrator<(it@innogroup.com.ph)>";
         $to = $row['email'];
-
         $subject = "SMRT|Reminder: Task Due Today";
         $message = '<html>
                             <body style="margin: 0 auto; padding: 10px; border: 1px solid #e1e1e1; font-family:Calibri">
@@ -25,12 +24,11 @@ while ($row = $email_to_assigner->fetch(PDO::FETCH_ASSOC)) {
                                     <h3 style="padding: 0; margin: 0;">  Message: </h3>
                                 </div>
                                 <div style="border: 1px solid #e1e1e1; padding: 5px">    
-                                Hi, ' . $row['fullname'] . '<br><br>
-                                Just a quick reminder that ' . $warnDate != $currentDate ? 'today' : 'tommorow' . ' is the deadline for the task you assigned. Please ensure it`s done by the end of the day.<br><br>
+                                Hi, ' . $row['fullname'] . ',<br><br>
+                                Just a friendly reminder about the upcoming deadline for the task you assigned. Please ensure it`s completed by the end of the day on ' . date('F d, Y', strtotime($row['timeline'])) . '.<br><br>
                                 The details of the task are as follow:<br><br>
                                 Task Name: ' . $row['task'] . '<br>
-                                Description:  ' . $row['add_comment'] . '<br>
-                                Deadline:  ' . date('F d, Y', strtotime($row['timeline'])) . '<br><br>
+                                Description:  ' . $row['add_comment'] . '<br><br>
                                 Thank you for your dedication and commitment.
                                 <br><br>Best regards,
                                 <br><br>Sales & Marketing Request Tracker System Administrator
@@ -53,41 +51,42 @@ while ($row = $email_to_assigner->fetch(PDO::FETCH_ASSOC)) {
 
 $email_to_handler = $tasks->automatic_email_to_handler();
 while ($row2 = $email_to_handler->fetch(PDO::FETCH_ASSOC)) {
-    $dateTime = new DateTime($row['timeline']);
+    $dateTime = new DateTime($row2['timeline']);
     $modifydate = $dateTime->modify('-2 day'); // Subtract 2 day from the date
     $warnDate = $modifydate->format('Y-m-d');
-    if ($row['timeline'] == $currentDate || $warnDate == $currentDate) {
-        $from = "system.administrator<(it@innogroup.com.ph)>";
-        $to = $row2['email'];
+    $user_id = explode(',', $row2['user_id']);
+    foreach ($user_id as $ud) {
+        if ($row2['timeline'] == $currentDate || $warnDate == $currentDate) {
+            $from = "system.administrator<(it@innogroup.com.ph)>";
+            $to = $row2['email'];
+            $subject = "SMRT|Reminder: Task Due Today";
+            $message = '<html>
+                                <body style="margin: 0 auto; padding: 10px; border: 1px solid #e1e1e1; font-family:Calibri">
+                                    <div style="background-color: #00C957; padding: 5px; color: white">
+                                        <h3 style="padding: 0; margin: 0;">  Message: </h3>
+                                    </div>
+                                    <div style="border: 1px solid #e1e1e1; padding: 5px">    
+                                    Hi, ' . $row2['fullname'] . ',<br><br>
+                                    Just a friendly reminder about the upcoming deadline for the task assigned to you. Please ensure it`s completed by the end of the day on ' . date('F d, Y', strtotime($row2['timeline'])) . '.<br><br>
+                                    The details of the task are as follow:<br><br>
+                                    Task Name: ' . $row2['task'] . '<br>
+                                    Description:  ' . $row2['add_comment'] . '<br><br>
+                                    <br><br>Best regards,
+                                    <br><br>Sales & Marketing Request Tracker System Administrator
+                                    </div>
+                                    <br/>
+                                    <br/>
+                                    <div style="padding:10px 0px; text-align: center; font-size: 11px; border-top: 1px solid #e1e1e1">
+                                    SRMT &middot; <a href="http://www.innogroup.com.ph/smrt">Innogroup</a>
+                                    </div>
+                                </body>
+                            </html>';
 
-        $subject = "SMRT|Reminder: Task Due Today";
-        $message = '<html>
-                            <body style="margin: 0 auto; padding: 10px; border: 1px solid #e1e1e1; font-family:Calibri">
-                                <div style="background-color: #00C957; padding: 5px; color: white">
-                                    <h3 style="padding: 0; margin: 0;">  Message: </h3>
-                                </div>
-                                <div style="border: 1px solid #e1e1e1; padding: 5px">    
-                                Hi, ' . $row2['fullname'] . '<br><br>
-                                Just a quick reminder that ' . $warnDate != $currentDate ? 'today' : 'tommorow' . ' is the deadline for completing your assigned task. Please ensure it`s done by the end of the day.<br><br>
-                                The details of the task are as follow:<br><br>
-                                Task Name: ' . $row2['task'] . '<br>
-                                Description:  ' . $row2['add_comment'] . '<br>
-                                Deadline:  ' . date('F d, Y', strtotime($row2['timeline'])) . '<br><br>
-                                <br><br>Best regards,
-                                <br><br>Sales & Marketing Request Tracker System Administrator
-                                </div>
-                                <br/>
-                                <br/>
-                                <div style="padding:10px 0px; text-align: center; font-size: 11px; border-top: 1px solid #e1e1e1">
-                                SRMT &middot; <a href="http://www.innogroup.com.ph/smrt">Innogroup</a>
-                                </div>
-                            </body>
-                        </html>';
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type:text/html;charset=iso-8859-1" . "\r\n";
+            $headers .= "From: " . $from . "" . "\r\n";
 
-        $headers = "MIME-Version: 1.0" . "\r\n";
-        $headers .= "Content-type:text/html;charset=iso-8859-1" . "\r\n";
-        $headers .= "From: " . $from . "" . "\r\n";
-
-        echo (mail($to, $subject, $message, $headers)) ? 1 : 0;
+            echo (mail($to, $subject, $message, $headers)) ? 2 : 0;
+        }
     }
 }

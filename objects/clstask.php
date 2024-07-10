@@ -235,7 +235,7 @@ class clsTask
     }
     public function automatic_email_to_handler()
     {
-        $sql = 'SELECT t.timeline, t.task, t.add_comment, CONCAT(u.firstname, " ", u.lastname) as fullname, u.email FROM task t JOIN users u ON u.id = t.user_id WHERE t.status != 2';
+        $sql = 'SELECT t.timeline, t.task, t.add_comment, t.user_id, CONCAT(u.firstname, " ", u.lastname) as fullname, u.email FROM task t JOIN users u ON u.id = t.user_id WHERE t.status != 2';
         $sel = $this->conn->prepare($sql);
 
         $sel->execute();
