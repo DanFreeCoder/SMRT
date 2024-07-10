@@ -10,6 +10,7 @@ $logs->id = $_POST['id'];
 $log = $logs->get_date_logs();
 while ($row = $log->fetch(PDO::FETCH_ASSOC)) {
     $date_logs =  $row['date_logs'];
+    $content = $row['context'];
 }
 $logs->id = $_POST['id'];
 $log = $logs->get_prev_date_logs();
@@ -19,7 +20,8 @@ while ($row = $log->fetch(PDO::FETCH_ASSOC)) {
 
 $array = array(
     'date_logs' => $date_logs,
-    'date_logs_prev' => $date_logs_prev
+    'date_logs_prev' => $date_logs_prev,
+    'content' => $content
 );
 
 echo json_encode($array);

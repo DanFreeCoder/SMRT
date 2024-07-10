@@ -17,6 +17,7 @@ while ($row = $task_detail->fetch(PDO::FETCH_ASSOC)) {
     $created_at = $row['created_at'];
     $add_comment = $row['add_comment'];
     $assigned_by = $row['assigned_by'];
+    $assignee = $row['assignee'];
     $status = $row['status'];
 
     $data[] = array(
@@ -27,6 +28,7 @@ while ($row = $task_detail->fetch(PDO::FETCH_ASSOC)) {
         'created_at' => $created_at,
         'add_comment' => $add_comment,
         'assigned_by' => $assigned_by,
+        'assignee' => $assignee,
         'status' => $status
     );
 }

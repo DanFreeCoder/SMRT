@@ -10,7 +10,7 @@
             <div class="row">
                 <div class="card card-white pt-0">
                     <div class="card-body" style="height: 450px; max-height:450px; overflow-y: auto;">
-                        <i class="fa-solid fa-list-check"> TASK</i>
+                        <i class="fa-solid fa-list-check"></i> <b>My Task</b>
                         <ul class="nav justify-content-center">
                             <li class="nav-item">
                                 <a class="nav-link active" id="btn-all" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#home-tab-pane">All</a>
@@ -43,39 +43,36 @@
             <div class="card mb-4">
                 <div class="card-header" style="background-color:transparent; position:relative;">
                     <div class="d-flex justify-content-between mb-0">
-                        <i class="fa-solid fa-bars-progress"> <span style="font-size: small;" id="task_title"></span></i>
-                        <input type="text" id="assigner" hidden>
+                        <h3 id="task_title"><i class="fa-solid fa-bars-progress"></i> </h3>
+                        <input type="text" id="assignee" hidden>
                         <span><i class="fa-solid fa-ranking-star"></i> <span name="status" id="status" style="pointer-events:none;"></span></span>
                     </div>
                 </div>
-                <div class="d-flex justify-content-between mb-0">
-                    <span>Total Accumulated: <span id="accumulated"></span></span>
-                    <a href="javascript:void(0)" id="ondesc">See descriptions</a>
+                <div class="row mb-0">
+                    <span><b><span id="accumulated"></span></b></span>
+                    <span id="desctext"></span>
                 </div>
                 <div class="card-body m-0" style="max-height: 370px; height:370px; overflow-y: auto;">
-                    <table class="table-data table table-striped">
-                        <thead>
-                            <tr>
-                                <th class="no-sort">DATE</th>
-                                <th class="no-sort">NAME</th>
-                                <th class="no-sort">CONTEXT</th>
-                                <th class="no-sort">Days</th>
-                            </tr>
-                        </thead>
-                        <tbody class="logs-data">
-                            <!-- jquery -->
-                        </tbody>
+                    <table class="table-data text-center table table-striped">
+                        <!-- ajax -->
                     </table>
                 </div>
-                <p class="m-0 p-0">Date Created: <i class="fa-regular fa-calendar"> <span style="font-size: small;" id="date_created"></span></i></p>
-                <div class="d-flex justify-content-between">
-                    <p>Completion Date: <i class="fa-regular fa-calendar"> <span style="font-size: small;" id="timeline"></span></i></p>
-                    <p>Urgency: <select name="urgency" id="urgency" style="pointer-events:none;">
-                            <option value="0" selected></option>
-                            <option value="1">Low</option>
-                            <option value="2">Mid</option>
-                            <option value="3">High</option>
-                        </select></p>
+                <div class="row">
+                    <div class="col-md-4 m-0 p-0">
+                        <p class="m-0 p-0" style="font-size: small;">Date Created: <i class="fa-regular fa-calendar"></i> <span style="font-size: small;" id="date_created"></span></p>
+                        <p class="p-0 m-0" style="font-size: small;">Completion Date: <i class="fa-regular fa-calendar"></i> <span style="font-size: small;" id="timeline"></span></p>
+                        <p class="m-0 p-0" style="font-size: small;">Assigned By: <span id="assigned_by"></span></p>
+                    </div>
+                    <div class="col-md-8 m-0 p-0 d-flex justify-content-end">
+                        <div class="d-flex align-items-end m-0 p-0">
+                            <p>Urgency: <select class="p-0 m-0" name="urgency" id="urgency" style="pointer-events:none;">
+                                    <option value="0" selected></option>
+                                    <option value="1">Low</option>
+                                    <option value="2">Mid</option>
+                                    <option value="3">High</option>
+                                </select></p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card-footer" style="border:none; background-color:transparent;">
@@ -90,71 +87,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <form id="modalForm">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <input type="text" name="task_name" id="task_name" class="form-control mb-3" placeholder="Task name here..." required>
-                        <textarea name="description" id="description" class="form-control mb-3" placeholder="Description"></textarea>
-                        <div class="input-group flex-nowrap mb-3">
-                            <span class="input-group-text" id="addon-wrapping"><i class="fa-solid fa-calendar-day"></i> Due Date</span>
-                            <input type="date" class="form-control" name="due-date" placeholder="" required>
-                        </div>
-                        <select name="urgency" id="urgency" class="form-control">
-                            <option value="0" disabled selected>Select Urgency</option>
-                            <option value="1">Low</option>
-                            <option value="2">Mid</option>
-                            <option value="3">High</option>
-                        </select>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="btn-group gap-5">
-                            <button type="button" class="btn btn-light" id="assignbtn" name="user_id"><i class="fa-solid fa-chalkboard-user"></i> <span id="ass_text" name="ass_text">Assign to</span></button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn custom-btn">Add Task</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!--User Modal -->
-    <div class="modal fade" id="UserModal" tabindex="-1" aria-labelledby="UserModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="UserModalLabel">Assign to</h1>
-                </div>
-                <div class="modal-body" id="Usermodal-body">
-                    <select name="users" id="users" class="form-control">
-
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- desxcription -->
-    <div class="modal fade" id="descriptionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h6>Description</h6>
-                </div>
-                <div class="modal-body">
-                    <textarea name="desctext" id="desctext" class="form-control"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <?php include_once 'partials/footer.php'; ?>

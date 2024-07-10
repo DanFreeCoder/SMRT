@@ -7,18 +7,21 @@ $db = $database->connect();
 $users = new clsUsers($db);
 
 $data = array();
-$users->id = $_POST['id'];
-$user = $users->user_byid();
-while ($row = $user->fetch(PDO::FETCH_ASSOC)) {
-    $id = $row['id'];
-    $fullname = $row['firstname'] . ' ' . $row['lastname'];
-    $email = $row['email'];
+$fullname = array(); // Initialize arrays to store data
+$email = array();
+$arrayid = explode(',', $_POST['id']);
 
-    $data[] = array(
-        'id' => $id,
-        'fullname' => $fullname,
-        'email' => $email
-    );
+foreach ($arrayid as $value) {
+    $users->id = $value;
+    $user = $users->user_byid();
+    while ($row = $user->fetch(PDO::FETCH_ASSOC)) {
+        // $id = $row['id'];
+        $fullname[] = $row['firstname'] . ' ' . $row['lastname'];
+        $email[] = $row['email'];
+    }
 }
+$data[] = array('fullname' => $fullname, 'email' => $email);
+
+
 
 echo json_encode($data);

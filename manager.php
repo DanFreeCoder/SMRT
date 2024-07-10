@@ -5,13 +5,14 @@
 <!-- Page content-->
 <div class="main-container" style="margin-top: 80px; overflow-x:hidden;">
     <input type="text" class="session-data" value="<?php echo $_SESSION['access_type']; ?>" hidden>
+    <input type="text" id="assignee" hidden>
     <div class="row">
         <div class="col-lg-3">
             <!-- dashboard section -->
             <div class="row">
                 <div class="card card-white">
                     <div class="card-header m-0 p-0" style="background-color:transparent; border:none;">
-                        <div class="btn custom-btn form-control" id="newTask" data-bs-target="#exampleModal"><i class="fa-solid fa-plus"></i> New Task</div>
+                        <div class="btn btn-flat custom-btn form-control mb-1" id="newTask" data-bs-target="#exampleModal"><i class="fa-solid fa-plus"></i> New Task</div>
                         <div class="row">
                             <div class="col-md-2 m-0">
                                 <button class="btn btn-sm btn-success" id="reset">RESET</button>
@@ -20,7 +21,7 @@
                                 </select></div>
                         </div>
                     </div>
-                    <div class="card-body" id="category" style="height: 450px; max-height:450px; overflow-y: auto;">
+                    <div class="card-body" id="category" style="height: 526px; max-height:526px; overflow-y: auto;">
                         <ul class="nav justify-content-center">
                             <li class="nav-item">
                                 <a class="nav-link active" id="btn-all" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#home-tab-pane">All</a>
@@ -50,42 +51,43 @@
         <!-- Side widgets-->
         <div class="col-lg-9">
             <!-- Side widget-->
-            <div class="card mb-4">
+            <div class="card mb-4" id="container-content">
                 <div class="card-header" style="background-color:transparent; position:relative;">
                     <div class="d-flex justify-content-between mb-0">
-                        <i class="fa-solid fa-bars-progress"> <span style="font-size: small;" id="task_title"></span></i>
+                        <h3 id="task_title"><i class="fa-solid fa-bars-progress"></i> </h3>
                         <span><i class="fa-solid fa-ranking-star"></i> <span name="status" id="status" style="pointer-events:none;"></span></span>
                     </div>
                 </div>
-                <div class="d-flex justify-content-between mb-0">
-                    <span>Total Accumulated: <span id="accumulated"></span></span>
-                    <a href="javascript:void(0)" id="ondesc">See descriptions</a>
+                <div class="row mb-0 p-0 m-0">
+                    <div class="d-flex justify-content-between">
+                        <span><span id="accumulated"></span></span>
+                        <a href="#" id="tooltip" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="">
+                            <i class="fa-solid fa-users-line fs-4 mt-2"></i>
+                        </a>
+                    </div>
+                    <span id="desctext"></span>
                 </div>
-                <div class="card-body m-0" style="max-height: 370px; height:370px; overflow-y: auto;">
+                <div class="card-body contentbody m-0" style="max-height: 370px; height:370px; overflow-y: auto;">
                     <table class="table-data table table-striped table-responsive">
-                        <thead>
-                            <tr>
-                                <?php echo $_SESSION['access_type'] == 3 ? ' <th class="no-sort"><i class="fa-solid fa-location-arrow"></i></th>' : ''  ?>
-                                <th class="no-sort">DATE</th>
-                                <th class="no-sort">NAME</th>
-                                <th class="no-sort">CONTEXT</th>
-                                <th class="no-sort">Days</th>
-                            </tr>
-                        </thead>
-                        <tbody class="logs-data">
-                            <!-- jquery -->
-                        </tbody>
+                        <!-- jquery -->
                     </table>
                 </div>
-                <p class="m-0 p-0">Date Created: <i class="fa-regular fa-calendar"> <span style="font-size: small;" id="date_created"></span></i></p>
-                <div class="d-flex justify-content-between m-0 p-0">
-                    <p>Completion Date: <i class="fa-regular fa-calendar"> <span style="font-size: small;" id="timeline"></span></i></p>
-                    <p>Urgency: <select name="urgency" id="urgency" style="<?php echo ($_SESSION['access_type'] == 2) ? 'pointer-events:none;' : ''; ?>">
-                            <option value="0" selected></option>
-                            <option value="1">Low</option>
-                            <option value="2">Mid</option>
-                            <option value="3">High</option>
-                        </select></p>
+                <div class="row">
+                    <div class="col-md-4 m-0 p-0">
+                        <p class="m-0 p-0" style="font-size: small;">Date Created: <i class="fa-regular fa-calendar"></i> <span style="font-size: small;" id="date_created"></span></p>
+                        <p class="p-0 m-0" style="font-size: small;">Completion Date: <i class="fa-regular fa-calendar"></i> <span style="font-size: small;" id="timeline"></span></p>
+                        <p class="m-0 p-0" style="font-size: small;">Assigned By:<span id="assigned_by"></span></p>
+                    </div>
+                    <div class="col-md-8 m-0 p-0 d-flex justify-content-end">
+                        <div class="d-flex align-items-end m-0 p-0">
+                            <p>Urgency: <select class="p-0 m-0" name="urgency" id="urgency" style="<?php echo ($_SESSION['access_type'] == 2) ? 'pointer-events:none;' : ''; ?>">
+                                    <option value="0" selected></option>
+                                    <option value="1">Low</option>
+                                    <option value="2">Mid</option>
+                                    <option value="3">High</option>
+                                </select></p>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-footer" style="border:none; background-color:transparent;">
                     <?php
@@ -148,12 +150,12 @@
                     <h1 class="modal-title fs-5" id="UserModalLabel">Assign to</h1>
                 </div>
                 <div class="modal-body" id="Usermodal-body">
-                    <select name="users" id="users" class="form-control">
+                    <select name="users" id="users" class="form-control" multiple>
 
                     </select>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-flat btn-success" data-bs-dismiss="modal">Save</button>
                 </div>
             </div>
         </div>
@@ -180,14 +182,17 @@
     </div>
     <!-- edit-date-logs -->
     <div class="modal fade" id="edit_date_logs_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog">
             <form id="cus_logsForm">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h6>Enter custom date logs?</h6>
+                        <h6>Edit logs details?</h6>
                     </div>
                     <div class="modal-body">
-                        <input type="text" class="form-control" name="upd-date-logs" id="upd-date-logs" placeholder="mm/dd/yyyy">
+                        <label for="upd-date-logs">Date logs</label>
+                        <input type="text" class="form-control" name="upd-date-logs" id="upd-date-logs" placeholder="mm/dd/yyyy" required>
+                        <label for="context">Content</label>
+                        <textarea name="context" id="context" class="form-control" required></textarea>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="cancel">cancel</button>
@@ -198,7 +203,7 @@
         </div>
     </div>
     <!-- edit-date-task created -->
-    <div class="modal fade" id="edit_created_date_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="edit_created_date_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <form id="date_created_taskForm">
                 <div class="modal-content">
@@ -206,42 +211,28 @@
                         <input type="text" class="form-control" name="task_created_at" id="task_created_at" placeholder="mm/dd/yyyy" required>
                     </div>
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-success" id="update_task_created">Update</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-    <div class="modal fade" id="descriptionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h6>Description</h6>
-                </div>
-                <div class="modal-body">
-                    <textarea name="desctext" id="desctext" class="form-control"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!--Re-assign Modal -->
-    <div class="modal fade" id="reassignModal" tabindex="-1" aria-labelledby="UserModalLabel" aria-hidden="true">
+    <div class="modal fade" id="reassignModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="UserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="UserModalLabel">Assign to</h1>
                 </div>
                 <div class="modal-body" id="Usermodal-body">
-                    <input type="text" id="taskuser_id" hidden>
-                    <select name="users2" id="users2" class="form-control">
+                    <input type="text" id="taskx2_id" hidden>
+                    <select name="users2" id="users2" class="form-control" multiple>
 
                     </select>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancel-ass">Cancel</button>
                     <button type="button" class="btn btn-success" id="upd_reassign">Update</button>
                 </div>
             </div>

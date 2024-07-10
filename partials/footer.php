@@ -1,10 +1,12 @@
 <!-- Bootstrap core JS-->
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.8/dist/sweetalert2.all.min.js"></script>
-<script src="https://code.jquery.com/ui/1.13.3/jquery-ui.js"></script>
+<script src="assets/jquery/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"></script>
+<script src="assets/jquery/jquery-ui.js"></script>
+<script src="assets/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
+<script src="assets/sweetalert/sweetalert2.all.min.js"></script>
+<script src="assets/picker/picker.min.js"></script>
 <script>
     const Toast = Swal.mixin({
         toast: true,

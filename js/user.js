@@ -1,27 +1,11 @@
 $(document).ready(function () {
 
     "use strict";
-    // datatable setting
-    $('.table-data').DataTable({
-        'lengthChange': false,
-        'searching': false,
-        'ordering': false,
-        pageLength: 5
-    });
     // display task
     getActiveTask();
     getCompleteTask();
     getAllTask();
 
-    function reset() {
-        $('.todo-all').html('')
-        $('.todo-active').html('')
-        $('.todo-complete').html('')
-        // display task
-        getActiveTask();
-        getCompleteTask();
-        getAllTask();
-    }
 
     function getActiveTask() {
         const status = 1;
@@ -88,13 +72,15 @@ $(document).ready(function () {
             data: { id: task_id },
             dataType: 'json',
             success: function (data) {
-                $('#task_title').text(data[0].task_name)
+                $('#task_title').text('');
+                $('#desctext').text('')
+                $('#task_title').append('<i class="fa-solid fa-bars-progress"></i> ' + data[0].task_name)
                 $('#timeline').text(new Date(data[0].timeline).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }))
                 $('#status').text(data[0].status == 1 ? 'Active' : 'Complete')
-                $('#assigner').val(data[0].assigned_by)
                 $('#urgency').val(data[0].urgency)
-                $('#desctext').val(data[0].add_comment)
+                $('#desctext').append('<b>Description:</b> ' + data[0].add_comment)
                 $('#date_created').text(new Date(data[0].created_at).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }))
+                $('#assigned_by').text(data[0].assigned_by);
                 var creationDate = new Date(data[0].created_at)
                 $.ajax({
                     type: 'post',
@@ -106,7 +92,7 @@ $(document).ready(function () {
                         var timeDifference = last_logs - creationDate;
                         // Convert milliseconds to days (assuming 1 day = 24 * 60 * 60 * 1000 milliseconds)
                         var accumulatedDays = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-                        $('#accumulated').text(`${accumulatedDays ? accumulatedDays : 0}` + ' ' + `${accumulatedDays > 1 ? 'Days' : 'Day'}`)
+                        $('#accumulated').text(`Total Accumulated: ${accumulatedDays ? accumulatedDays : 0}` + ' ' + `${accumulatedDays > 1 ? 'Days' : 'Day'}`)
                     }
                 })
             }
@@ -115,45 +101,32 @@ $(document).ready(function () {
             type: 'post',
             url: 'controller/logs.php',
             data: { task_id: task_id },
-            dataType: 'json',
-            success: function (data) {
-                $('.logs-data').html('');
-                for (var i = 0; i < data.length; i++) {
-                    var d = data[i];
-                    // Calculate the index of the next row
-                    var nextIndex = i + 1;
-                    // Check if the next row exists
-                    if (nextIndex < data.length) {
-                        var nextDateLogs = data[nextIndex].date_logs;
-                        // Calculate the time difference in milliseconds
-                        var timeDifference = new Date(nextDateLogs) - new Date(d.date_logs);
-                        var absoluteTimeDifference = Math.abs(timeDifference);
-                        // Convert milliseconds to days (assuming 1 day = 24 * 60 * 60 * 1000 milliseconds)
-                        var Days = Math.floor(absoluteTimeDifference / (1000 * 60 * 60 * 24));
-                        var formattedDate = new Date(d.date_logs).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
-                        $('.logs-data').append(
-                            `<tr>
-                                <td>${formattedDate}</td>
-                                <td>${d.name}</td>
-                                <td>${d.context}</td>
-                                <td>${Days}${Days > 1 ? ' Days' : ' Day'}</td>
-                            </tr>`
-                        );
-                    }
+            // dataType: 'json',
+            success: function (html) {
+                // Update the content of .logs-data with the received HTML
+                $('.table-data').html(html);
+                $('.session-data').val() != 3 ? $('.vip-edit').remove() : '';
+
+                // Destroy the existing DataTables instance (if initialized)
+                if ($.fn.DataTable.isDataTable('.table-data')) {
+                    $('.table-data').DataTable().destroy();
                 }
-                // Append the last row
-                if (data.length > 0) {
-                    var d = data[data.length - 1];
-                    var formattedDate = new Date(d.date_logs).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
-                    $('.logs-data').append(
-                        `<tr>
-                            <td>${formattedDate}</td>
-                            <td>${d.name}</td>
-                            <td>${d.context}</td>
-                            <td>0 Day</td>
-                        </tr>`
-                    );
-                }
+
+                // Reinitialize DataTables with updated content
+                $('.table-data').DataTable({
+                    // DataTables options, if any
+                    "pageLength": 5,
+                    "paging": true,  // Enable pagination
+                    "lengthChange": false,  // Enable the page length change option
+                    "searching": false,  // Enable searching/filtering
+                    "info": true,  // Show table information (e.g., "Showing 1 to 10 of 20 entries")
+                    "autoWidth": true,  // Disable auto width calculation (if needed)
+                    "order": [],  // Disable initial sorting (if needed)
+                    "columnDefs": [
+                        { "orderable": false, "targets": "no-sort" }  // Disable sorting for columns with class "no-sort"
+                    ]
+                });
+
                 // Hide the last penbtn icon
                 $('.logs-data tr:last').find('.penbtn').hide();
             }
@@ -234,13 +207,12 @@ $(document).ready(function () {
         $(this).css('background-color', '#dfe6e9')
     });
 
-
+    //UPDATE LOGS
     $('#logsForm').on('submit', function (e) {
         e.preventDefault();
         const formData = $(this).serialize();
         const first = formData.split('&')[1]
         const task_id = first.split('=')[1]
-        const assigner = $('#assigner').val();
         $.ajax({
             type: 'post',
             url: 'controller/add_logs.php',
@@ -249,33 +221,41 @@ $(document).ready(function () {
                 if (res > 0) {
                     $.ajax({
                         type: 'post',
-                        url: 'controller/user_byid.php',
-                        data: { id: assigner },
-                        dataType: 'json',
-                        success: function (data) {
-                            data.forEach((d) => {
-                                var email = d.email;
-                                var fullname = d.fullname;
-                                var task_name = $('#task_title').text()
-                                var notification = `I'm writing to inform you that the handler has updated the logs for the task "${task_name}" you assigned.
-                               `;
-                                var detailsData = `fullname=${fullname}&notification=${notification}&email=${email}`;
-                                $.ajax({
-                                    type: 'post',
-                                    url: 'controller/emailTo.php',
-                                    data: detailsData,
-                                    success: function (res) {
-                                        if (res > 0) {
-                                            console.log('emailed')
-                                            Toaster('success', 'Logs Updated')
-                                            getlogs_data(task_id)
-                                            $('#context').val('')
-                                        }
-                                    }
-                                })
+                        url: 'controller/assignerid_byTask.php',
+                        data: { id: task_id },
+                        success: function (assigner) {
+                            $.ajax({
+                                type: 'post',
+                                url: 'controller/user_byid.php',
+                                data: { id: assigner },
+                                dataType: 'json',
+                                success: function (data) {
+                                    data.forEach((d) => {
+                                        var email = d.email;
+                                        var fullname = d.fullname;
+                                        var task_name = $('#task_title').text()
+                                        var notification = `I'm writing to inform you that the handler has updated the logs for the task "${task_name}" you assigned.
+                                       `;
+                                        var detailsData = `fullname=${fullname}&notification=${notification}&email=${email}`;
+                                        $.ajax({
+                                            type: 'post',
+                                            url: 'controller/emailTo.php',
+                                            data: detailsData,
+                                            success: function (res) {
+                                                if (res > 0) {
+                                                    console.log('emailed')
+                                                    Toaster('success', 'Logs Updated')
+                                                    getlogs_data(task_id)
+                                                    $('#context').val('')
+                                                }
+                                            }
+                                        })
+                                    })
+                                }
                             })
                         }
                     })
+
 
                 }
             }

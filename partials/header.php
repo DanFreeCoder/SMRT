@@ -17,41 +17,19 @@ if (!isset($_SESSION['fullname'])) {
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <link href="css/styles.css" rel="stylesheet" />
     <!-- bootstrap general -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.bootstrap5.css">
+    <link rel="stylesheet" href="assets/bootstrap/bootstrap2.min.css">
+    <link rel="stylesheet" href="assets/datatables/dataTables.bootstrap5.css">
     <!-- Core theme CSS (includes Bootstrap)-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.8/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
-    <style>
-        .active {
-            border-bottom: 2px solid #6200ee;
-        }
+    <link rel="stylesheet" href="assets/datepicker.min.css">
+    <link rel="stylesheet" href="assets/sweetalert/sweetalert2.min.css">
+    <link rel="stylesheet" href="assets/jquery/animate.min.css" />
+    <link rel="stylesheet" href="assets/jquery/jquery-ui.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/picker/picker.min.css">
 
-        .custom-btn {
-            background-color: #6200ee;
-            color: #fff;
-        }
-
-        .todo-item {
-            cursor: pointer;
-        }
-
-        .clicked-todo {
-            background-color: #dfe6e9;
-        }
-
-        option:checked {
-            background: #dcdde1;
-        }
-
-        p,
-        a,
-        button {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-    </style>
 </head>
 
 <body style="background-color: #d1d8e0;">
@@ -63,6 +41,7 @@ if (!isset($_SESSION['fullname'])) {
             <input type="text" value="<?php echo $_SESSION['id'] ?>" id="session_id" hidden>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="reminder.php">Reminder</a></li>
                     <li class="nav-item"><a class="nav-link" style="text-decoration:underline;" href="account.php"><?php echo $_SESSION['fullname'] ?></a></li>
                     <li class="nav-item">
                         <a class="nav-link" href="controller/logout.php">Log out</a>

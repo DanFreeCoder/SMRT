@@ -39,6 +39,7 @@ class clsUsers
         $sel->execute();
         return $sel;
     }
+
     public function logout()
     { //Author: Dan
         session_start();
@@ -63,6 +64,7 @@ class clsUsers
 
         return $upd->execute() ? true : false;
     }
+
     public function update_account_np()
     {
         $sql = 'UPDATE ' . $this->tblname . ' SET firstname = ?, lastname=?, username=? WHERE id = ?';

@@ -31,7 +31,7 @@ class clsTask
 
     public function task()
     {
-        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0 AND assigned_by = ' . $_SESSION['id'] . ' ORDER BY id DESC';
+        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0  ORDER BY id DESC';
         $sel = $this->conn->prepare($sql);
 
         $sel->execute();
@@ -39,7 +39,7 @@ class clsTask
     }
     public function taskforUser()
     {
-        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status = ? AND user_id = ' . $_SESSION['id'] . ' ORDER BY id DESC';
+        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status = ? AND FIND_IN_SET(' . $_SESSION['id'] . ', user_id)  ORDER BY id DESC';
         $sel = $this->conn->prepare($sql);
 
         $sel->bindParam(1, $this->status);
@@ -49,7 +49,7 @@ class clsTask
 
     public function all_task()
     {
-        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0 AND assigned_by = ' . $_SESSION['id'] . ' ORDER BY id DESC';
+        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0 ORDER BY id DESC';
         $sel = $this->conn->prepare($sql);
 
         $sel->execute();
@@ -57,7 +57,7 @@ class clsTask
     }
     public function task_filter_by()
     {
-        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0 AND assigned_by = ' . $_SESSION['id'] . ' AND user_id = ? ORDER BY id DESC';
+        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0 AND FIND_IN_SET(?, user_id) ORDER BY id DESC';
         $sel = $this->conn->prepare($sql);
 
         $sel->bindParam(1, $this->user_id);
@@ -67,14 +67,12 @@ class clsTask
     }
     public function all_taskforUser()
     {
-
-        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0 AND user_id = ' . $_SESSION['id'] . ' ORDER BY id DESC';
+        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE status != 0 AND FIND_IN_SET(' . $_SESSION['id'] . ', user_id) ORDER BY id DESC';
         $sel = $this->conn->prepare($sql);
 
         $sel->execute();
         return $sel;
     }
-
     public function update_task()
     {
         $sql = 'UPDATE ' . $this->tblname . ' SET status = ? WHERE id = ?';
@@ -85,7 +83,6 @@ class clsTask
 
         return $upd->execute() ? true : false;
     }
-
     public function store_logs()
     {
         $sql = 'INSERT INTO ' . $this->tblname2 . ' SET task_id=?, name=?, context=?, status=?, date_logs =?';
@@ -99,7 +96,6 @@ class clsTask
 
         return $ins->execute() ? true : false;
     }
-
     public function last_logs()
     {
         $sql = 'SELECT `date_logs` as last_logs FROM ' . $this->tblname2 . ' ORDER BY id DESC LIMIT 1';
@@ -158,7 +154,7 @@ class clsTask
 
     public function task_details()
     {
-        $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE id = ?';
+        $sql = 'SELECT t.id, t.task, t.timeline, t.urgency, t.created_at, t.add_comment, CONCAT(u.firstname, " ", u.lastname) as assigned_by, t.status, t.user_id as assignee FROM task t JOIN users u ON u.id = t.assigned_by WHERE t.id = ?';
         $sel = $this->conn->prepare($sql);
 
         $sel->bindParam(1, $this->id);
@@ -168,7 +164,7 @@ class clsTask
 
     public function get_date_logs()
     {
-        $sql = 'SELECT date_logs FROM ' . $this->tblname2 . ' WHERE id = ?';
+        $sql = 'SELECT date_logs, context FROM ' . $this->tblname2 . ' WHERE id = ?';
         $sel = $this->conn->prepare($sql);
 
         $sel->bindParam(1, $this->id);
@@ -197,11 +193,12 @@ class clsTask
 
     public function upd_date_logs()
     {
-        $sql = 'UPDATE ' . $this->tblname2 . ' SET date_logs = ? WHERE id = ?';
+        $sql = 'UPDATE ' . $this->tblname2 . ' SET date_logs = ?, context = ? WHERE id = ?';
         $upd = $this->conn->prepare($sql);
 
         $upd->bindParam(1, $this->date_logs);
-        $upd->bindParam(2, $this->id);
+        $upd->bindParam(2, $this->context);
+        $upd->bindParam(3, $this->id);
 
         return $upd->execute() ? true : false;
     }
@@ -217,16 +214,6 @@ class clsTask
         return $upd->execute() ? true : false;
     }
 
-    public function get_user_id()
-    {
-        $sql = 'SELECT user_id FROM ' . $this->tblname . ' WHERE id = ?';
-        $sel = $this->conn->prepare($sql);
-
-        $sel->bindParam(1, $this->id);
-        $sel->execute();
-        return $sel;
-    }
-
     public function upd_task_user_id()
     {
         $sql = 'UPDATE ' . $this->tblname . ' SET user_id = ? WHERE id = ?';
@@ -240,7 +227,7 @@ class clsTask
 
     public function automatic_email_to_assigner()
     {
-        $sql = 'SELECT t.timeline, t.task, t.add_comment, CONCAT(u.firstname, " ", u.lastname) as fullname, u.email FROM task t JOIN users u ON u.id = t.assigned_by';
+        $sql = 'SELECT t.timeline, t.task, t.add_comment, CONCAT(u.firstname, " ", u.lastname) as fullname, u.email FROM task t JOIN users u ON u.id = t.assigned_by WHERE t.status != 2';
         $sel = $this->conn->prepare($sql);
 
         $sel->execute();
@@ -248,9 +235,38 @@ class clsTask
     }
     public function automatic_email_to_handler()
     {
-        $sql = 'SELECT t.timeline, t.task, t.add_comment, CONCAT(u.firstname, " ", u.lastname) as fullname, u.email FROM task t JOIN users u ON u.id = t.user_id';
+        $sql = 'SELECT t.timeline, t.task, t.add_comment, CONCAT(u.firstname, " ", u.lastname) as fullname, u.email FROM task t JOIN users u ON u.id = t.user_id WHERE t.status != 2';
         $sel = $this->conn->prepare($sql);
 
+        $sel->execute();
+        return $sel;
+    }
+
+    public function assignee_byid()
+    {
+        $sql = "SELECT user_id as ids FROM $this->tblname WHERE id = ?";
+        $sel = $this->conn->prepare($sql);
+
+        $sel->bindParam(1, $this->id);
+        $sel->execute();
+        return $sel;
+    }
+
+    public function lastAddTask()
+    {
+        $sql = "SELECT id as lastTaskId FROM $this->tblname WHERE assigned_by = " . $_SESSION['id'] . " ORDER BY id DESC LIMIT 1";
+        $sel = $this->conn->prepare($sql);
+
+        $sel->execute();
+        return $sel;
+    }
+
+    public function assignerid_byTask()
+    {
+        $sql = 'SELECT assigned_by as assigner FROM ' . $this->tblname . ' WHERE id = ?';
+        $sel = $this->conn->prepare($sql);
+
+        $sel->bindParam(1, $this->id);
         $sel->execute();
         return $sel;
     }

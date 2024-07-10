@@ -1,16 +1,20 @@
 <?php
 include 'config/connection.php';
 include 'objects/clstask.php';
-include 'objects/clsusers.php';
+include 'objects/clsreminder.php';
 $database = new clsConnection();
 $db = $database->connect();
 
 $tasks = new clsTask($db);
+$reminder = new clsreminder($db);
 
 $currentDate = date('Y-m-d');
 $email_to_assigner = $tasks->automatic_email_to_assigner();
 while ($row = $email_to_assigner->fetch(PDO::FETCH_ASSOC)) {
-    if ($row['timeline'] == $currentDate) {
+    $dateTime = new DateTime($row['timeline']);
+    $modifydate = $dateTime->modify('-2 day'); // Subtract 2 day from the date
+    $warnDate = $modifydate->format('Y-m-d');
+    if ($row['timeline'] == $currentDate || $warnDate == $currentDate) {
         $from = "system.administrator<(it@innogroup.com.ph)>";
         $to = $row['email'];
 
@@ -22,7 +26,7 @@ while ($row = $email_to_assigner->fetch(PDO::FETCH_ASSOC)) {
                                 </div>
                                 <div style="border: 1px solid #e1e1e1; padding: 5px">    
                                 Hi, ' . $row['fullname'] . '<br><br>
-                                Just a quick reminder that today is the deadline for completing your assigned task. Please ensure it`s done by the end of the day.<br><br>
+                                Just a quick reminder that ' . $warnDate != $currentDate ? 'today' : 'tommorow' . ' is the deadline for the task you assigned. Please ensure it`s done by the end of the day.<br><br>
                                 The details of the task are as follow:<br><br>
                                 Task Name: ' . $row['task'] . '<br>
                                 Description:  ' . $row['add_comment'] . '<br>
@@ -49,8 +53,10 @@ while ($row = $email_to_assigner->fetch(PDO::FETCH_ASSOC)) {
 
 $email_to_handler = $tasks->automatic_email_to_handler();
 while ($row2 = $email_to_handler->fetch(PDO::FETCH_ASSOC)) {
-    if ($row2['timeline'] == $currentDate) {
-
+    $dateTime = new DateTime($row['timeline']);
+    $modifydate = $dateTime->modify('-2 day'); // Subtract 2 day from the date
+    $warnDate = $modifydate->format('Y-m-d');
+    if ($row['timeline'] == $currentDate || $warnDate == $currentDate) {
         $from = "system.administrator<(it@innogroup.com.ph)>";
         $to = $row2['email'];
 
@@ -62,7 +68,7 @@ while ($row2 = $email_to_handler->fetch(PDO::FETCH_ASSOC)) {
                                 </div>
                                 <div style="border: 1px solid #e1e1e1; padding: 5px">    
                                 Hi, ' . $row2['fullname'] . '<br><br>
-                                Just a quick reminder that today is the deadline for completing your assigned task. Please ensure it`s done by the end of the day.<br><br>
+                                Just a quick reminder that ' . $warnDate != $currentDate ? 'today' : 'tommorow' . ' is the deadline for completing your assigned task. Please ensure it`s done by the end of the day.<br><br>
                                 The details of the task are as follow:<br><br>
                                 Task Name: ' . $row2['task'] . '<br>
                                 Description:  ' . $row2['add_comment'] . '<br>
