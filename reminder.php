@@ -69,7 +69,7 @@
                                     <div class="col-6">
                                         <div class="form-check form-switch">
                                             <input class="form-check-input" type="checkbox" role="switch" id="repeat">
-                                            <label class="form-check-label" for="repeat" style="margin-right: 10px; margin-left: 5px;"> Repeat</label>
+                                            <label class="form-check-label" style="margin-right: 10px; margin-left: 5px;"> Repeat</label>
                                             <div id="days">
                                                 <button type="button" class="day" value="7" disabled>Su</button>
                                                 <button type="button" class="day" value="1" disabled>M</button>

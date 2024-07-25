@@ -1,0 +1,7 @@
+CRON JOB CONFIGURATION
+LINK: https://www.easycron.com/
+ACCOUNT:
+-USERNAME:
+    danilo.medallo@innogroup.com.ph
+-PASSWORD:
+    medallod

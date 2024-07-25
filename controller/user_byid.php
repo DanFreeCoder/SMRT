@@ -15,7 +15,6 @@ foreach ($arrayid as $value) {
     $users->id = $value;
     $user = $users->user_byid();
     while ($row = $user->fetch(PDO::FETCH_ASSOC)) {
-        // $id = $row['id'];
         $fullname[] = $row['firstname'] . ' ' . $row['lastname'];
         $email[] = $row['email'];
     }

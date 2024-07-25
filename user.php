@@ -3,33 +3,33 @@
     header("Location:controller/logout.php");
 } ?>
 <!-- Page content-->
-<div class="main-container" style="margin-top: 80px; overflow-x:hidden;">
-    <div class="row">
-        <div class="col-lg-3">
+<div class="main-container" style="margin: 5% 0 5%;">
+    <div class="row" style="width: 97%; margin:auto; height:100vh;">
+        <div class="col-lg-3 order-lg-last order-md-first order-sm-first">
             <!-- dashboard section -->
             <div class="row">
                 <div class="card card-white pt-0">
-                    <div class="card-body" style="height: 450px; max-height:450px; overflow-y: auto;">
+                    <div class="card-body">
                         <i class="fa-solid fa-list-check"></i> <b>My Task</b>
                         <ul class="nav justify-content-center">
                             <li class="nav-item">
-                                <a class="nav-link active" id="btn-all" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#home-tab-pane">All</a>
+                                <a class="nav-link active" id="btn-active" href="#" data-bs-toggle="tab" data-bs-target="#profile-tab-pane">Active</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="btn-active" href="#" data-bs-toggle="tab" data-bs-target="#profile-tab-pane">Active</a>
+                                <a class="nav-link" id="btn-complete" href="#" data-bs-toggle="tab" data-bs-target="#contact-tab-pane">Done</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="btn-complete" href="#" data-bs-toggle="tab" data-bs-target="#contact-tab-pane">Complete</a>
+                                <a class="nav-link" id="btn-all" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#home-tab-pane">Closed</a>
                             </li>
                         </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane fade show active todo-all todo-list" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-                                <!-- jquery -->
-                            </div>
-                            <div class="tab-pane fade todo-active todo-list" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                        <div class="tab-content" style="height: 530px; max-height:530px; overflow-y: auto;">
+                            <div class="tab-pane fade show active todo-active todo-list" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
                                 <!-- jquery -->
                             </div>
                             <div class="tab-pane fade todo-complete todo-list" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
+                                <!-- jquery -->
+                            </div>
+                            <div class="tab-pane fade todo-all todo-list" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
                                 <!-- jquery -->
                             </div>
                         </div>
@@ -38,10 +38,10 @@
             </div>
         </div>
         <!-- Side widgets-->
-        <div class="col-lg-9">
+        <div class="col-lg-9 order-lg-first order-md-last order-sm-last">
             <!-- Side widget-->
             <div class="card mb-4">
-                <div class="card-header" style="background-color:transparent; position:relative;">
+                <div class=" card-header" style="background-color:transparent; position:relative;">
                     <div class="d-flex justify-content-between mb-0">
                         <h3 id="task_title"><i class="fa-solid fa-bars-progress"></i> </h3>
                         <input type="text" id="assignee" hidden>
@@ -57,7 +57,7 @@
                         <!-- ajax -->
                     </table>
                 </div>
-                <div class="row">
+                <div class="row" style="width:95%; margin: auto;">
                     <div class="col-md-4 m-0 p-0">
                         <p class="m-0 p-0" style="font-size: small;">Date Created: <i class="fa-regular fa-calendar"></i> <span style="font-size: small;" id="date_created"></span></p>
                         <p class="p-0 m-0" style="font-size: small;">Completion Date: <i class="fa-regular fa-calendar"></i> <span style="font-size: small;" id="timeline"></span></p>
@@ -76,13 +76,21 @@
                 </div>
 
                 <div class="card-footer" style="border:none; background-color:transparent;">
-                    <form id="logsForm">
-                        <div class="input-group">
-                            <input class="form-control" type="text" name="context" id="context" placeholder="Enter text..." required />
-                            <input type="text" name="task_id" id="task_id" hidden />
-                            <button class="btn custom-btn" id="button-logs" type="submit">UPDATE LOGS</button>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form id="logsForm">
+                                <div class="input-group">
+                                    <input class="form-control" type="text" name="context" id="context" placeholder="Enter text..." required />
+                                    <input type="text" name="task_id" id="task_id" hidden />
+                                    <button class="btn custom-btn" id="button-logs" type="submit">UPDATE LOGS</button>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                        <div class="col-lg-12 mt-1 d-flex justify-content-end" id="action">
+                            <!-- js -->
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

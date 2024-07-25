@@ -15,17 +15,8 @@ class clsreminder
         $sql = "INSERT INTO $this->tblname SET `date` = ?, next_date = ?, `time` = ?, title = ?, notes = ?, day_repeat = ?, is_repeat = ?, status = ?, user_id = ?";
         $ins = $this->conn->prepare($sql);
 
-        $ins->bindParam(1, $this->date);
-        $ins->bindParam(2, $this->next_date);
-        $ins->bindParam(3, $this->time);
-        $ins->bindParam(4, $this->title);
-        $ins->bindParam(5, $this->notes);
-        $ins->bindParam(6, $this->day_repeat);
-        $ins->bindParam(7, $this->is_repeat);
-        $ins->bindParam(8, $this->status);
-        $ins->bindParam(9, $this->user_id);
-
-        return  $ins->execute() ? 1 : 0;
+        $exeParam =  $ins->execute([$this->date, $this->next_date, $this->time, $this->title, $this->notes, $this->day_repeat, $this->is_repeat, $this->status, $this->user_id]);
+        return $exeParam ? true : false;
     }
 
     public function update_reminder()
@@ -33,16 +24,8 @@ class clsreminder
         $sql = "UPDATE $this->tblname SET `date` =?, `time`= ?, title = ?, notes = ?, day_repeat = ?, is_repeat = ?, status = ? WHERE id = ?";
         $upd = $this->conn->prepare($sql);
 
-        $upd->bindParam(1, $this->date);
-        $upd->bindParam(2, $this->time);
-        $upd->bindParam(3, $this->title);
-        $upd->bindParam(4, $this->notes);
-        $upd->bindParam(5, $this->day_repeat);
-        $upd->bindParam(6, $this->is_repeat);
-        $upd->bindParam(7, $this->status);
-        $upd->bindParam(8, $this->id);
-
-        return $upd->execute() ? true : false;
+        $exeParam = $upd->execute([$this->date, $this->time, $this->title, $this->notes, $this->day_repeat, $this->is_repeat, $this->status, $this->id]);
+        return $exeParam ? true : false;
     }
 
 
@@ -61,8 +44,7 @@ class clsreminder
         $sql = "SELECT * FROM $this->tblname WHERE id = ?";
         $sel = $this->conn->prepare($sql);
 
-        $sel->bindParam(1, $this->id);
-        $sel->execute();
+        $sel->execute([$this->id]);
         return $sel;
     }
 
@@ -80,11 +62,7 @@ class clsreminder
         $sql = "UPDATE $this->tblname SET status = ? WHERE id = ?";
         $upd = $this->conn->prepare($sql);
 
-        $upd->bindParam(1, $this->status);
-        $upd->bindParam(2, $this->id);
-
-        $upd->execute();
-        return $upd ? true : false;
+        return $upd->execute([$this->status, $this->id]) ? true : false;
     }
 
     public function cron_reminders()
@@ -101,9 +79,6 @@ class clsreminder
         $sql = 'UPDATE ' . $this->tblname . ' SET next_date = ? WHERE id = ?';
         $upd = $this->conn->prepare($sql);
 
-        $upd->bindParam(1, $this->next_date);
-        $upd->bindParam(2, $this->id);
-
-        return $upd->execute() ? true : false;
+        return $upd->execute([$this->next_date, $this->id]) ? true : false;
     }
 }

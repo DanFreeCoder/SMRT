@@ -31,7 +31,7 @@ while ($row = $task->fetch(PDO::FETCH_ASSOC)) {
                     <div class="col-6">
                     <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="repeat" ' . ($is_repeat > 0 ? 'checked' : '') . '>
-                            <label class="form-check-label" for="repeat" style="margin-right: 10px; margin-left: 5px;"> Repeat</label>
+                            <label class="form-check-label" style="margin-right: 10px; margin-left: 5px;"> Repeat</label>
                             <div id="days">
                                 <button type="button" class="day ' . (in_array(7, $days) ? 'dayClicked' : '') . '" value="7" style="' . (in_array(7, $days) ? 'background-color:#00a8ff; border:1px solid #00a8ff; color:#fff;' : '') . '" ' . ($is_repeat > 0 ? '' : 'disabled') . '>Su</button>
                                 <button type="button" class="day ' . (in_array(1, $days) ? 'dayClicked' : '') . '" value="1" style="' . (in_array(1, $days) ? 'background-color:#00a8ff; border:1px solid #00a8ff; color:#fff;' : '') . '" ' . ($is_repeat > 0 ? '' : 'disabled') . '>M</button>

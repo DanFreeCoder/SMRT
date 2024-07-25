@@ -4,65 +4,56 @@ $(document).ready(function () {
     // display task
     getActiveTask();
     getCompleteTask();
-    getAllTask();
+    ClosedtaskforUser();
 
-
-    function getActiveTask() {
+    async function getActiveTask() {
         const status = 1;
-        $.ajax({
+        const data = await $.ajax({
             type: 'post',
             url: 'controller/taskforUser.php',
-            data: {
-                status: status
-            },
-            dataType: 'json',
-            success: function (data) {
-                data.forEach((d) => {
-                    $('.todo-active').append(`
-                        <div class="todo-item" data-info="${d.id}">
-                            <span>${d.task_name}</span>
-                        </div>`);
-                })
-            }
-        });
+            data: { status },
+            dataType: 'json'
+        })
+        data.forEach((d) => {
+            $('.todo-active').append(`
+                <div class="todo-item" data-info="${d.id}">
+                    <span>${d.task_name}</span>
+                </div>`);
+        })
     }
 
 
-    function getCompleteTask() {
-        const status2 = 2;
-        $.ajax({
+    async function getCompleteTask() {
+        const status = 2;
+        const data = await $.ajax({
             type: 'post',
             url: 'controller/taskforUser.php',
-            data: {
-                status: status2
-            },
-            dataType: 'json',
-            success: function (data) {
-                data.forEach((d) => {
-                    $('.todo-complete').append(`
-                    <div class="todo-item complete" data-info="${d.id}">
-                        <span>${d.task_name}</span>
-                    </div>`);
-                })
-            }
+            data: { status },
+            dataType: 'json'
         });
+        data.forEach((d) => {
+            $('.todo-complete').append(`
+            <div class="todo-item" data-info="${d.id}">
+                <span>${d.task_name}</span>
+            </div>`);
+        })
     }
 
-    function getAllTask() {
-        // ALL TASK
-        $.ajax({
+    async function ClosedtaskforUser() {
+        const status = 3;
+        const data = await $.ajax({
             type: 'post',
-            url: 'controller/all_taskforUser.php',
-            dataType: 'json',
-            success: function (data) {
-                data.forEach((d) => {
-                    $('.todo-all').append(`
-                    <div class="todo-item ${d.status == 2 ? 'complete' : ''}" data-info="${d.id}">
-                        <span>${d.task_name}</span>
-                    </div>`);
-                })
-            }
+            url: 'controller/taskforUser.php',
+            data: { status },
+            dataType: 'json'
         });
+        data.forEach((d) => {
+            $('.todo-all').append(`
+            <div class="todo-item complete" data-info="${d.id}">
+                <span>${d.task_name}</span>
+            </div>`);
+        })
+
     }
 
     function getlogs_data(task_id) {
@@ -82,6 +73,7 @@ $(document).ready(function () {
                 $('#date_created').text(new Date(data[0].created_at).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }))
                 $('#assigned_by').text(data[0].assigned_by);
                 var creationDate = new Date(data[0].created_at)
+                $('#action').html(data[0].status == 1 ? `<button class="btn btn-sm btn-success mark_done" value="${task_id}"><i class="fa-regular fa-circle-check"></i> Mark as done</button>` : '');
                 $.ajax({
                     type: 'post',
                     url: 'controller/last_logs.php',
@@ -263,4 +255,49 @@ $(document).ready(function () {
     });
 
     $('#ondesc').on('click', () => $('#descriptionModal').modal('show'))
+    // mark done
+    $(document).on('click', '.mark_done', function () {
+        const id = $(this).val();
+        const status = 2;
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, mark done"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'post',
+                    url: 'controller/upd_task.php',
+                    data: { id: id, status: status },
+                    success: function (res) {
+                        if (res > 0) {
+                            $.ajax({
+                                type: 'post',
+                                url: 'controller/mark_date.php?action=done',
+                                data: { id: id },
+                                success: function () {
+                                    Swal.fire({
+                                        title: "Done!",
+                                        text: "The task has been successfully done.",
+                                        icon: "success"
+                                    });
+                                    $('.todo-active').html('')
+                                    $('.todo-complete').html('')
+                                    $('.todo-all').html('')
+                                    getlogs_data(id);
+                                    getActiveTask();
+                                    getCompleteTask();
+                                    ClosedtaskforUser();
+                                }
+                            })
+                        }
+                    }
+                })
+            }
+        });
+    })
 });

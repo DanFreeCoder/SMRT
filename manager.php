@@ -3,44 +3,43 @@
     header("Location:controller/logout.php");
 } ?>
 <!-- Page content-->
-<div class="main-container" style="margin-top: 80px; overflow-x:hidden;">
+<div class="main-container" style="margin: 5% 0 5%;">
     <input type="text" class="session-data" value="<?php echo $_SESSION['access_type']; ?>" hidden>
     <input type="text" id="assignee" hidden>
-    <div class="row">
-        <div class="col-lg-3">
+    <div class="row" style="width: 97%; margin:auto; height:100vh;">
+        <div class="col-lg-3 order-lg-last order-md-first order-sm-first">
             <!-- dashboard section -->
             <div class="row">
                 <div class="card card-white">
                     <div class="card-header m-0 p-0" style="background-color:transparent; border:none;">
                         <div class="btn btn-flat custom-btn form-control mb-1" id="newTask" data-bs-target="#exampleModal"><i class="fa-solid fa-plus"></i> New Task</div>
-                        <div class="row">
-                            <div class="col-md-2 m-0">
-                                <button class="btn btn-sm btn-success" id="reset">RESET</button>
-                            </div>
-                            <div class="col-md-10 m-0 pl-0"><select name="filter" id="filter" class="form-control m-0" style="font-size: small;">
-                                </select></div>
+                        <div class="d-flex justify-content-between gap-1">
+                            <button class="btn btn-sm btn-success" style="font-size: small;" id="reset">RESET</button>
+                            <select name="filter" id="filter" class="form-control m-0" style="font-size: small;">
+                            </select>
                         </div>
                     </div>
-                    <div class="card-body" id="category" style="height: 526px; max-height:526px; overflow-y: auto;">
+                    <div class="card-body" id="category">
                         <ul class="nav justify-content-center">
+
                             <li class="nav-item">
-                                <a class="nav-link active" id="btn-all" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#home-tab-pane">All</a>
+                                <a class="nav-link active" id="btn-active" href="#" data-bs-toggle="tab" data-bs-target="#profile-tab-pane">Active</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="btn-active" href="#" data-bs-toggle="tab" data-bs-target="#profile-tab-pane">Active</a>
+                                <a class="nav-link" id="btn-complete" href="#" data-bs-toggle="tab" data-bs-target="#contact-tab-pane">Done</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="btn-complete" href="#" data-bs-toggle="tab" data-bs-target="#contact-tab-pane">Complete</a>
+                                <a class="nav-link" id="btn-all" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#home-tab-pane">Closed</a>
                             </li>
                         </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane fade show active todo-all todo-list" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-                                <!-- jquery -->
-                            </div>
-                            <div class="tab-pane fade todo-active todo-list" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                        <div class="tab-content" style="height: 500px; max-height:500px; overflow-y: auto;">
+                            <div class="tab-pane fade todo-active todo-list show active" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
                                 <!-- jquery -->
                             </div>
                             <div class="tab-pane fade todo-complete todo-list" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
+                                <!-- jquery -->
+                            </div>
+                            <div class="tab-pane fade todo-all todo-list" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
                                 <!-- jquery -->
                             </div>
                         </div>
@@ -49,7 +48,7 @@
             </div>
         </div>
         <!-- Side widgets-->
-        <div class="col-lg-9">
+        <div class="col-lg-9 order-lg-first order-md-last order-sm-last">
             <!-- Side widget-->
             <div class="card mb-4" id="container-content">
                 <div class="card-header" style="background-color:transparent; position:relative;">
@@ -72,11 +71,12 @@
                         <!-- jquery -->
                     </table>
                 </div>
-                <div class="row">
+                <div class="row" style="width:95%; margin: auto;">
                     <div class="col-md-4 m-0 p-0">
                         <p class="m-0 p-0" style="font-size: small;">Date Created: <i class="fa-regular fa-calendar"></i> <span style="font-size: small;" id="date_created"></span></p>
                         <p class="p-0 m-0" style="font-size: small;">Completion Date: <i class="fa-regular fa-calendar"></i> <span style="font-size: small;" id="timeline"></span></p>
                         <p class="m-0 p-0" style="font-size: small;">Assigned By:<span id="assigned_by"></span></p>
+                        <p class="m-0 p-0" style="font-size: small;">Extended due date: <i class="fa-regular fa-calendar"></i> <span id="text-extend"></span></p>
                     </div>
                     <div class="col-md-8 m-0 p-0 d-flex justify-content-end">
                         <div class="d-flex align-items-end m-0 p-0">
@@ -90,23 +90,34 @@
                     </div>
                 </div>
                 <div class="card-footer" style="border:none; background-color:transparent;">
-                    <?php
-                    if ($_SESSION['access_type'] == 3) {
-                        echo '
-                        <div class="d-flex justify-content-end">
-                            <a href="#" id="customlogs">Enter custom date logs?</a>
+                    <di`v class="row">
+                        <div class="col-lg-9">
+                            <?php
+                            if ($_SESSION['access_type'] == 3) {
+                                echo '
+                                    <div class="d-flex justify-content-end">
+                                        <a href="#" id="customlogs">Enter custom date logs?</a>
+                                    </div>
+                                    ';
+                            }
+                            ?>
+                            <form id="logsForm">
+                                <div class="input-group">
+                                    <input class="form-control" type="text" name="context" id="context" placeholder="Enter text..." required />
+                                    <input type="text" name="task_id" id="task_id" hidden />
+                                    <button class="btn custom-btn" id="button-logs" type="submit">UPDATE LOGS</button>
+                                </div>
+                            </form>
                         </div>
-                         ';
-                    }
-                    ?>
+                        <div class="col-lg-3">
+                            <br>
+                            <div class="btn btn-success form-control" id="extend"><i class="fa-regular fa-calendar-plus"></i> Extend due date</div>
+                            <div class="mt-1 d-flex justify-content-end" id="action">
+                                <!-- js -->
+                            </div>
+                        </div>
 
-                    <form id="logsForm">
-                        <div class="input-group">
-                            <input class="form-control" type="text" name="context" id="context" placeholder="Enter text..." required />
-                            <input type="text" name="task_id" id="task_id" hidden />
-                            <button class="btn custom-btn" id="button-logs" type="submit">UPDATE LOGS</button>
-                        </div>
-                    </form>
+                        </di>
                 </div>
             </div>
         </div>
@@ -178,6 +189,23 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+    <!-- extend due date -->
+    <div class="modal fade" id="extend_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6>Extend Due Date</h6>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" name="extend-due" id="extend-due" placeholder="mm/dd/yyyy">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="extendbtn">Save</button>
+                </div>
+            </div>
         </div>
     </div>
     <!-- edit-date-logs -->

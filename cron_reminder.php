@@ -17,9 +17,10 @@ while ($row = $list->fetch(PDO::FETCH_ASSOC)) {
     // check if reminder is on_repeat
     if ($is_repeat > 0) {
         $currentday = date("N", strtotime($today)); //get the number of current days
+        $currentdayName = date("l", strtotime($today)); //get the name of current days
         // Check if the current day matches any of the days in $days
         if (in_array($currentday, $days)) {
-            $date = 'On Repeat'; //set date to on repeat
+            $date = 'Repeats ' . $currentdayName; //set date to on repeat
             // Send an email
             email($date, $time, $notes, $title, $fullname, $to);
         }

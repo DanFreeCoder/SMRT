@@ -16,9 +16,7 @@ class clsUsers
         $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE username = ? AND password = ? AND status != 0';
         $sel = $this->conn->prepare($sql);
 
-        $sel->bindParam(1, $this->username);
-        $sel->bindParam(2, $this->password);
-        $sel->execute();
+        $sel->execute([$this->username, $this->password]);
         return $sel;
     }
 
@@ -35,8 +33,8 @@ class clsUsers
     {
         $sql = 'SELECT * FROM ' . $this->tblname . ' WHERE id = ?';
         $sel = $this->conn->prepare($sql);
-        $sel->bindParam(1, $this->id);
-        $sel->execute();
+
+        $sel->execute([$this->id]);
         return $sel;
     }
 
@@ -56,13 +54,7 @@ class clsUsers
         $sql = 'UPDATE ' . $this->tblname . ' SET firstname = ?, lastname=?, username=?, password=? WHERE id = ?';
         $upd = $this->conn->prepare($sql);
 
-        $upd->bindParam(1, $this->firstname);
-        $upd->bindParam(2, $this->lastname);
-        $upd->bindParam(3, $this->username);
-        $upd->bindParam(4, $this->password);
-        $upd->bindParam(5, $this->id);
-
-        return $upd->execute() ? true : false;
+        return $upd->execute([$this->firstname, $this->lastname, $this->username, $this->password, $this->id]) ? true : false;
     }
 
     public function update_account_np()
@@ -70,11 +62,6 @@ class clsUsers
         $sql = 'UPDATE ' . $this->tblname . ' SET firstname = ?, lastname=?, username=? WHERE id = ?';
         $upd = $this->conn->prepare($sql);
 
-        $upd->bindParam(1, $this->firstname);
-        $upd->bindParam(2, $this->lastname);
-        $upd->bindParam(3, $this->username);
-        $upd->bindParam(4, $this->id);
-
-        return $upd->execute() ? true : false;
+        return $upd->execute([$this->firstname, $this->lastname, $this->username, $this->id]) ? true : false;
     }
 }

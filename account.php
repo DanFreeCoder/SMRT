@@ -13,7 +13,7 @@ if (!isset($_SESSION['fullname'])) {
     <link rel="stylesheet" href="assets/sweetalert/sweetalert2.min.css">
     <!-- bootstrap general -->
     <link rel="stylesheet" href="assets/bootstrap/bootstrap.min.css">
-    <title>Document</title>
+    <title>Account Details</title>
     <style>
         * {
             font-family: Arial, Helvetica, sans-serif;
@@ -32,7 +32,7 @@ if (!isset($_SESSION['fullname'])) {
 <body style="background-color: #d1d8e0;">
     <div class="container">
         <div class="row justify-content-center align-items-center" style="height: 100vh;">
-            <div class="col-md-5">
+            <div class="col-md-8">
                 <!-- Adjust the column size as needed -->
                 <div class="card shadow">
                     <h1 class="card-header text-center text-light" style="background-color: #6200ee;"><a href="<?php echo $_SESSION['access_type'] == 2 ? 'user.php' : 'manager.php' ?>" class="text-light"><i class="fa-solid fa-arrow-left"></i></a> | Account</h1>
@@ -57,7 +57,7 @@ if (!isset($_SESSION['fullname'])) {
             </div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="assets/jquery/jquery.min.js"></script>
     <script src="assets/sweetalert/sweetalert2.all.min.js"></script>
     <script>
         const Toast = Swal.mixin({

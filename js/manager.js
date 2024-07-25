@@ -2,9 +2,6 @@ $(document).ready(function () {
 
     "use strict";
 
-    function firstLoad() {
-
-    }
     // display task
     getTask();
 
@@ -64,46 +61,31 @@ $(document).ready(function () {
         getTask();
     }
 
-    function getTask() {
-        $.ajax({
-            type: 'post',
-            url: 'controller/task.php',
-            dataType: 'json',
-            success: function (data) {
-                $('.todo-active').html('')
-                $('.todo-complete').html('')
-                $('.todo-all').html('')
-                data.forEach((d) => {
-                    if (d.status == 1) { // active task
-                        $('.todo-active').append(`
-                        <div class="todo-item" data-info="${d.id}">
-                            <div class="d-flex justify-content-between">
-                                <div class="checker"><span class=""><input type="checkbox" value="${d.id}" ${d.status == 2 ? 'checked' : ''}></span></div>
-                                <span>${d.task_name}</span>
-                                <a href="javascript:void(0)" data-bs-toggle="dropdown" ><i class="fa-solid fa-ellipsis-vertical fs-5"></i>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item re-assign" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-user-group text-warning"></i> Reassign</a></li>
-                                        <li ${$('.session-data').val() != 3 ? 'hidden' : ''}><a class="dropdown-item edit-created_date" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-file-pen text-success"></i> Edit created date</a></li>
-                                        <li><a class="dropdown-item remove-task" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-trash text-danger"></i> Remove</a></li>
-                                    </ul>
-                                </a>
-                            </div>
-                        </div>`);
-                    } else if (d.status == 2) { //complete task
-                        $('.todo-complete').append(`
-                        <div class="todo-item complete" data-info="${d.id}">
-                                <div class="checker"><span class=""><input type="checkbox" value="${d.id}" ${d.status == 2 ? 'checked' : ''}></span></div>
-                                <span>${d.task_name}</span>
-                        </div>`);
-                    }
 
-                    // all task
-                    $('.todo-all').append(`
-                    <div class="todo-item ${d.status == 2 ? 'complete' : ''}" data-info="${d.id}">
+
+    async function getTask() {
+        try {
+            const response = await $.ajax({
+                type: 'POST',
+                url: 'controller/task.php',
+                dataType: 'json'
+                // Add any additional parameters here if needed
+            });
+
+            // Clear existing content
+            $('.todo-active').html('');
+            $('.todo-complete').html('');
+            $('.todo-all').html('');
+
+            // Process fetched data
+            response.forEach((d) => {
+                if (d.status == 1) { // active task
+                    $('.todo-active').append(`
+                    <div class="todo-item" data-info="${d.id}">
                         <div class="d-flex justify-content-between">
-                            <div class="checker"><span class=""><input type="checkbox" value="${d.id}" ${d.status == 2 ? 'checked' : ''}></span></div>
                             <span>${d.task_name}</span>
-                            <a href="javascript:void(0)" data-bs-toggle="dropdown" ><i class="fa-solid fa-ellipsis-vertical fs-5"></i>
+                            <a href="javascript:void(0)" data-bs-toggle="dropdown">
+                                <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item re-assign" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-user-group text-warning"></i> Reassign</a></li>
                                     <li ${$('.session-data').val() != 3 ? 'hidden' : ''}><a class="dropdown-item edit-created_date" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-file-pen text-success"></i> Edit created date</a></li>
@@ -112,65 +94,68 @@ $(document).ready(function () {
                             </a>
                         </div>
                     </div>`);
-
-                })
-            }
-        });
+                } else if (d.status == 2) { // done task
+                    $('.todo-complete').append(`
+                    <div class="todo-item" data-info="${d.id}">
+                        <span>${d.task_name}</span>
+                    </div>`);
+                } else { // closed task
+                    $('.todo-all').append(`
+                    <div class="todo-item ${d.status == 3 ? 'complete' : ''}" data-info="${d.id}">
+                        <span>${d.task_name}</span>
+                    </div>`);
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            // Handle errors as needed
+        }
     }
 
-    function filterTaskby(id) {
-        $.ajax({
-            type: 'post',
-            url: 'controller/task_filter_by.php',
-            data: {
-                id: id,
-            },
-            dataType: 'json',
-            success: function (data) {
-                $('.todo-active').html('')
-                $('.todo-complete').html('')
-                $('.todo-all').html('')
-                data.forEach((d) => {
-                    if (d.status == 1) { // active task
-                        $('.todo-active').append(`
-                        <div class="todo-item" data-info="${d.id}">
-                            <div class="d-flex justify-content-between">
-                                <div class="checker"><span class=""><input type="checkbox" value="${d.id}"></span></div>
-                                <span>${d.task_name}</span>
-                                <a href="javascript:void(0)" data-bs-toggle="dropdown" ><i class="fa-solid fa-ellipsis-vertical fs-5"></i>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item re-assign" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-user-group text-warning"></i> Reassign</a></li>
-                                        <li><a class="dropdown-item edit-created_date" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-file-pen text-success"></i> Edit created date</a></li>
-                                        <li><a class="dropdown-item remove-task" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-trash text-danger"></i> Remove</a></li>
-                                    </ul>
-                                </a>
-                            </div>
-                        </div>`);
-                    } else if (d.status == 2) { // complete task
-                        $('.todo-complete').append(`
-                        <div class="todo-item complete" data-info="${d.id}">
-                                <div class="checker"><span><input type="checkbox" value="${d.id}" checked /></span></div>
-                                <span>${d.task_name}</span>
-                        </div>`);
-                    }
-                    // all task
+
+    async function filterTaskby(id) {
+        try {
+            const response = await $.ajax({
+                type: 'POST',
+                url: 'controller/task_filter_by.php',
+                data: { id: id },
+                dataType: 'json',
+            })
+            $('.todo-active').html('')
+            $('.todo-complete').html('')
+            $('.todo-all').html('')
+
+            response.forEach((d) => {
+                if (d.status == 1) { // active task
+                    $('.todo-active').append(`
+                    <div class="todo-item" data-info="${d.id}">
+                        <div class="d-flex justify-content-between">
+                            <span>${d.task_name}</span>
+                            <a href="javascript:void(0)" data-bs-toggle="dropdown" ><i class="fa-solid fa-ellipsis-vertical fs-5"></i>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item re-assign" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-user-group text-warning"></i> Reassign</a></li>
+                                    <li><a class="dropdown-item edit-created_date" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-file-pen text-success"></i> Edit created date</a></li>
+                                    <li><a class="dropdown-item remove-task" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-trash text-danger"></i> Remove</a></li>
+                                </ul>
+                            </a>
+                        </div>
+                    </div>`);
+                } else if (d.status == 2) { // done task
+                    $('.todo-complete').append(`
+                    <div class="todo-item" data-info="${d.id}">
+                            <span>${d.task_name}</span>
+                    </div>`);
+                } else {
+                    // closed task
                     $('.todo-all').append(`
-                        <div class="todo-item ${d.status == 2 ? 'complete' : ''}" data-info="${d.id}">
-                            <div class="d-flex justify-content-between">
-                                <div class="checker"><span class=""><input type="checkbox" value="${d.id}" ${d.status == 2 ? 'checked' : ''}></span></div>
-                                <span>${d.task_name}</span>
-                                <a href="javascript:void(0)" data-bs-toggle="dropdown" ><i class="fa-solid fa-ellipsis-vertical fs-5"></i>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item re-assign" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-user-group text-warning"></i> Reassign</a></li>
-                                        <li><a class="dropdown-item edit-created_date" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-file-pen text-success"></i> Edit created date</a></li>
-                                        <li><a class="dropdown-item remove-task" href="javascript:void(0)" value="${d.id}"><i class="fa-solid fa-trash text-danger"></i> Remove</a></li>
-                                    </ul>
-                                </a>
-                            </div>
+                        <div class="todo-item ${d.status == 3 ? 'complete' : ''}" data-info="${d.id}">
+                            <span>${d.task_name}</span>
                         </div>`);
-                })
-            }
-        });
+                }
+            })
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
     }
 
 
@@ -223,6 +208,7 @@ $(document).ready(function () {
                 })
             }
         })
+
         $.ajax({
             type: 'post',
             url: 'controller/task_details.php',
@@ -232,12 +218,20 @@ $(document).ready(function () {
                 $('#task_title').text('');
                 $('#task_title').append('<i class="fa-solid fa-bars-progress"></i> ' + data[0].task_name)
                 $('#timeline').text(new Date(data[0].timeline).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }));
-                $('#status').text(data[0].status == 1 ? 'Active' : 'Complete')
+                $('#status').text(data[0].status == 1 ? 'Active' : data[0].status == 2 ? 'Done' : 'Closed')
                 $('#urgency').val(data[0].urgency)
                 $('#desctext').text('Description: ' + data[0].add_comment)
                 $('#date_created').text(new Date(data[0].created_at).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }))
                 $('#assigned_by').text(data[0].assigned_by);
+                $('#text-extend').text(data[0].extend_due != null ? new Date(data[0].extend_due).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }) : '');
+                $('#extend').val(task_id);
                 var creationDate = new Date(data[0].created_at)
+                const accesstype = $('.session-data').val();
+                if (accesstype == 3) {
+                    $('#action').html(data[0].status == 2 ? `<button class= "btn btn-success mark_closed form-control" value = "${task_id}" > <i class="fa-solid fa-lock"></i> Mark as closed</ button> ` : '');
+                }
+
+
                 $.ajax({
                     type: 'post',
                     url: 'controller/last_logs.php',
@@ -248,12 +242,12 @@ $(document).ready(function () {
                         var timeDifference = last_logs - creationDate;
                         // Convert milliseconds to days (assuming 1 day = 24 * 60 * 60 * 1000 milliseconds)
                         var accumulatedDays = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-                        $('#accumulated').text(`Total Accumulated:  ${accumulatedDays ? accumulatedDays : 0}` + ' ' + `${accumulatedDays > 1 ? 'Days' : 'Day'}`)
+                        $('#accumulated').text(`Total Accumulated: ${accumulatedDays ? accumulatedDays : 0}` + ' ' + `${accumulatedDays > 1 ? 'Days' : 'Day'} `)
                     }
                 })
-
             }
         })
+
         $.ajax({
             type: 'post',
             url: 'controller/logs.php',
@@ -302,7 +296,7 @@ $(document).ready(function () {
             success: function (data) {
                 var dateString = data
                 var dateParts = dateString.split("-")
-                var dateCreated = `${dateParts[1]}/${dateParts[2]}/${dateParts[0]}`;
+                var dateCreated = `${dateParts[1]} /${dateParts[2]}/${dateParts[0]} `;
                 $('#task_created_at').val(dateCreated)
                 $("#task_created_at").datepicker()
             }
@@ -315,7 +309,7 @@ $(document).ready(function () {
         var id = $('#task_id').val();
         $.ajax({
             type: 'post',
-            url: `controller/upd_task_date_created.php?id=${id}`,
+            url: `controller/upd_task_date_created.php?id=${id} `,
             data: formData,
             success: function (res) {
                 res > 0 ? Toaster('success', 'Task date created has been updated successfully.') : Toaster('error', 'Action Fail.')
@@ -327,11 +321,12 @@ $(document).ready(function () {
         })
     })
 
+    // NOT IN USE
     $(document).on('change', '[type="checkbox"]', function (e) {
         e.preventDefault();
         const id = $(this).val()
         const filter_id = $('#filter option:selected').val()
-        // complete
+        // done
         if ($(this).is(':checked')) {
             $.ajax({
                 type: 'post',
@@ -385,9 +380,9 @@ $(document).ready(function () {
             url: 'controller/users.php',
             dataType: 'json',
             success: function (data) {
-                $('#users').html('')
+                $('.modal #users').html('')
                 data.forEach((d) => {
-                    $('#users').append(`<option value="${d.id}">${d.firstname} ${d.lastname}</option>`);
+                    $('.modal #users').append(`<option value = "${d.id}"> ${d.firstname} ${d.lastname}</option>`);
                 })
                 $('.modal #users').picker({
                     search: true,
@@ -402,13 +397,12 @@ $(document).ready(function () {
     // open modal
     $(document).on('click', '#assignbtn', () => $('#UserModal').modal('show'))
 
-
     // add task
     $('#modalForm').on('submit', function (e) {
         e.preventDefault();
         var FormData = $(this).serialize();
         const user_id = $('.modal #users').val();
-        FormData += `&user_id=${user_id}`
+        FormData += `&user_id=${user_id}`;
         $.ajax({
             type: 'post',
             url: 'controller/add_task.php',
@@ -424,9 +418,9 @@ $(document).ready(function () {
                             var timeline = new Date($('#due-date').val()).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' })
                             var notification = `I'm reaching out to inform you that you have been assigned a new task. The details of the task are as follows:<br><br>
                                    Task Name: ${$('#task_name').val()} <br>
-                                   Description: ${$('#description').val()} <br>
-                                   Deadline: ${timeline} <br><br>
-                                   Thank you for your dedication and commitment.`;
+                                        Description: ${$('#description').val()} <br>
+                                            Deadline: ${timeline} <br><br>
+                                                Thank you for your dedication and commitment.`;
                             data.forEach((d) => {
                                 var emailarray = d.email;
                                 var fullnamearray = d.fullname;
@@ -448,7 +442,6 @@ $(document).ready(function () {
                                         }
                                     })
                                 }
-
                             })
                         }
                     })
@@ -518,25 +511,6 @@ $(document).ready(function () {
     };
 
     todo();
-
-    $(".add-task").keypress(function (e) {
-        if ((e.which == 13) && (!$(this).val().length == 0)) {
-            $('<div class="todo-item"><div class="checker"><span class=""><input type="checkbox"></span></div> <span>' + $(this).val() + '</span> <a href="javascript:void(0);" class="float-right remove-todo-item"><i class="icon-close"></i></a></div>').insertAfter('.todo-list .todo-item:last-child');
-            $(this).val('');
-        } else if (e.which == 13) {
-            alert('Please enter new task');
-        }
-        $(document).on('.todo-list .todo-item.added input').click(function () {
-            if ($(this).is(':checked')) {
-                $(this).parent().parent().parent().toggleClass('complete');
-            } else {
-                $(this).parent().parent().parent().toggleClass('complete');
-            }
-        });
-        $('.todo-list .todo-item.added .remove-todo-item').click(function () {
-            $(this).parent().remove();
-        });
-    });
 
     // get task logs
     $(document).on('click', '.todo-item', function () {
@@ -626,7 +600,7 @@ $(document).ready(function () {
         })
     });
 
-    // show custome logs modal
+    // show custom logs modal
     $(document).on('click', '#customlogs', function (e) {
         e.preventDefault()
         var taskid = $('#skip').val();
@@ -699,14 +673,8 @@ $(document).ready(function () {
                             maxDate: newDateString == maxDateString ? '' : maxDateString,
                             defaultsDate: newDateString,
                         });
-
-
-
-
                     }
                 })
-
-
             }
         })
     })
@@ -746,6 +714,10 @@ $(document).ready(function () {
     $('#urgency').on('change', function () {
         const urgency = $(this).val()
         const id = $('#task_id').val()
+        if (id == 0) {
+            Swal.fire("Please select a task.");
+            return false;
+        }
         $.ajax({
             type: 'post',
             url: 'controller/upd_urgency.php',
@@ -760,7 +732,6 @@ $(document).ready(function () {
                         getlogs_data($('#task_id').val())
                     }, 1000)
                 }
-
             }
         })
     });
@@ -797,12 +768,10 @@ $(document).ready(function () {
     // RE-ASSIGN TASK
     $(document).on('click', '.re-assign', function (e) {
         e.preventDefault();
-        $('#users2').picker('destroy')//reset the picker
-
+        $('.modal #users2').picker('destroy')//reset the picker
         const id = $(this).attr('value');
         $('#taskx2_id').val(id);
         $('#reassignModal').modal('show')
-
         $.ajax({
             type: 'post',
             url: 'controller/assignee_byid.php',
@@ -827,7 +796,7 @@ $(document).ready(function () {
                             var isSelected = task_user_id_arr.includes(d.id.toString());
                             $('.modal #users2').append(`<option value="${d.id}" ${isSelected ? 'selected' : ''} > ${d.firstname} ${d.lastname}</option>`);
                         });
-                        $('#users2').picker({
+                        $('.modal #users2').picker({
                             search: true,
                             texts: { trigger: "Add assignee", noResult: "No results", search: "Find..." },
                             searchAutofocus: true
@@ -838,59 +807,149 @@ $(document).ready(function () {
             }
         })
     })
-
+    // update selected reassign
     $(document).on('click', '#upd_reassign', function () {
         const user_id = $('#users2').val()
         const task_id = $('#taskx2_id').val()
         const mydata = `user_id=${user_id}&task_id=${task_id}`;
         $.ajax({
             type: 'post',
-            url: 'controller/upd_user_id.php',
-            data: mydata,
-            success: function (res) {
-                if (res > 0) {
-                    $.ajax({
-                        type: 'post',
-                        url: 'controller/user_byid.php',
-                        data: { id: user_id.join(',') },
-                        dataType: 'json',
-                        success: function (data) {
-                            var timeline = new Date($('#timeline').text()).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' })
-                            var notification = `I'm reaching out to inform you that a task has been <b>re-assigned</b> to you. The details of the task are as follows:<br><br>
-                                    Task Name: ${$('#task_title').text()} <br>
-                                    Description: ${$('#desctext').val()} <br>
-                                    Deadline: ${timeline} <br><br>
-                                    Thank you for your dedication and commitment.`;
-                            data.forEach((d) => {
-                                var emailArray = d.email;
-                                var fullnameArray = d.fullname;
-                                for (var i = 0; i < emailArray.length; i++) {
-                                    var email = emailArray[i];
-                                    var fullname = fullnameArray[i];
-                                    var detailsData = `fullname=${fullname}&notification=${notification}&email=${email}`;
-                                    $.ajax({
-                                        type: 'post',
-                                        url: 'controller/emailTo.php',
-                                        data: detailsData,
-                                        success: function (res) {
-                                            if (res > 0) {
-                                                Toaster('success', 'Assigned Successfully');
-                                                $('#reassignModal').modal('hide')
-                                            } else {
-                                                Toaster('error', 'Assign Fail')
-                                            }
+            url: 'controller/get_new_assignee.php',
+            data: { user_id: user_id.join(','), id: task_id },
+            dataType: 'json',
+            success: function (response) {
+                var new_AssigneeArr;
+                response.forEach(function (newAssignees) {
+                    // Convert object values to array of numbers
+                    var valuesArray = Object.values(newAssignees).map(Number);
+                    new_AssigneeArr = valuesArray; // Log the converted array
+                });
+                $.ajax({
+                    type: 'post',
+                    url: 'controller/upd_user_id.php',
+                    data: mydata,
+                    success: function (res) {
+                        if (res > 0) {
+                            $.ajax({
+                                type: 'post',
+                                url: 'controller/user_byid.php',
+                                data: { id: new_AssigneeArr.join(',') },
+                                dataType: 'json',
+                                success: function (data) {
+                                    var timeline = new Date($('#timeline').text()).toLocaleString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+                                    var notification = `I'm reaching out to inform you that a task has been <b>re-assigned</b> to you. The details of the task are as follows:<br><br>
+                                            Task Name: ${$('#task_title').text()} <br>
+                                            Description: ${$('#desctext').val()} <br>
+                                            Deadline: ${timeline} <br><br>
+                                            Thank you for your dedication and commitment.`;
+                                    data.forEach((d) => {
+                                        var emailArray = d.email;
+                                        var fullnameArray = d.fullname;
+                                        for (var i = 0; i < emailArray.length; i++) {
+                                            var email = emailArray[i];
+                                            var fullname = fullnameArray[i];
+                                            var detailsData = `fullname=${fullname}&notification=${notification}&email=${email}`;
+
+                                            $.ajax({
+                                                type: 'post',
+                                                url: 'controller/emailTo.php',
+                                                data: detailsData,
+                                                success: function (res) {
+                                                    if (res > 0) {
+                                                        console.log('emailed')
+                                                    } else {
+                                                        Toaster('error', 'Assign Fail')
+                                                    }
+                                                }
+                                            })
                                         }
                                     })
+
                                 }
                             })
+                            Toaster('success', 'Assigned Successfully');
+                            $('#reassignModal').modal('hide')
                             reset();
                             getlogs_data(task_id)
                             console.log($(`.todo-item[data-info='${task_id}']`))
                             $(`.todo-item[data-info='${task_id}']`).css('background-color', '#dfe6e9')
                         }
-                    })
-                }
+                    }
+                });
+            }
+        })
+
+    });
+
+    // mark close
+    $(document).on('click', '.mark_closed', function () {
+        const id = $(this).val();
+        const status = 3;
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, mark close"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'post',
+                    url: 'controller/upd_task.php',
+                    data: { id: id, status: status },
+                    success: function (res) {
+                        if (res > 0) {
+                            $.ajax({
+                                type: 'post',
+                                url: 'controller/mark_date.php?action=close',
+                                data: { id: id },
+                                success: function () {
+                                    Swal.fire({
+                                        title: "Closed!",
+                                        text: "The task has been successfully closed.",
+                                        icon: "success"
+                                    });
+                                    getlogs_data(id);
+                                    getTask();
+                                }
+                            })
+                        }
+                    }
+                })
             }
         });
+    })
+
+    // EXTEND DUE DATE
+    $(document).on('click', '#extend', function () {
+        const id = $(this).val();
+        if (id == 0) {
+            Swal.fire("Please select task first");
+            return false;
+        }
+        $('#extend_modal').modal('show')
+        $('#extend-due').val('')
+        // date picker
+        $('#extend-due').datepicker({
+            minDate: 0
+        });
     });
+
+    //save extend
+    $('#extendbtn').on('click', function () {
+        const extend = $('#extend-due').val();
+        const id = $('#extend').val();
+        $.ajax({
+            type: 'post',
+            url: 'controller/extend.php',
+            data: { id: id, extend: extend },
+            success: function (res) {
+                if (res > 0) {
+                    Toaster('success', 'Task due date updated successfully.')
+                }
+            }
+        })
+    })
 });

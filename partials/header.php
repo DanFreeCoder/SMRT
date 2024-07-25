@@ -41,11 +41,14 @@ if (!isset($_SESSION['fullname'])) {
             <input type="text" value="<?php echo $_SESSION['id'] ?>" id="session_id" hidden>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="reminder.php">Reminder</a></li>
-                    <li class="nav-item"><a class="nav-link" style="text-decoration:underline;" href="account.php"><?php echo $_SESSION['fullname'] ?></a></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="controller/logout.php">Log out</a>
-                    </li>
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"> <i class="fa-regular fa-user"></i> <?php echo $_SESSION['fullname'] ?></a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="reminder.php"><i class="fa-regular fa-bell"></i> Reminder</a></li>
+                            <li><a class="dropdown-item" href="account.php"><i class="fa-solid fa-gear"></i> Account Setting</a></li>
+                            <li><a class="dropdown-item" href="controller/logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</a></li>
+                        </ul>
+                    </div>
                 </ul>
             </div>
         </div>
