@@ -110,7 +110,6 @@
                             </form>
                         </div>
                         <div class="col-lg-3">
-                            <br>
                             <div class="btn btn-success form-control" id="extend"><i class="fa-regular fa-calendar-plus"></i> Extend due date</div>
                             <div class="mt-1 d-flex justify-content-end" id="action">
                                 <!-- js -->

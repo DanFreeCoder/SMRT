@@ -108,7 +108,6 @@ $(document).ready(function () {
             });
         } catch (error) {
             console.error('Error fetching data:', error);
-            // Handle errors as needed
         }
     }
 
@@ -229,8 +228,9 @@ $(document).ready(function () {
                 const accesstype = $('.session-data').val();
                 if (accesstype == 3) {
                     $('#action').html(data[0].status == 2 ? `<button class= "btn btn-success mark_closed form-control" value = "${task_id}" > <i class="fa-solid fa-lock"></i> Mark as closed</ button> ` : '');
+                } else {
+                    $('#action').html(data[0].status == 1 ? `<button class="btn btn-success mark_done form-control" value="${task_id}"><i class="fa-regular fa-circle-check"></i> Mark as done</button>` : '');
                 }
-
 
                 $.ajax({
                     type: 'post',
@@ -302,6 +302,48 @@ $(document).ready(function () {
             }
         })
     });
+
+    // mark done
+    $(document).on('click', '.mark_done', function () {
+        const id = $(this).val();
+        const status = 2;
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, mark done"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'post',
+                    url: 'controller/upd_task.php',
+                    data: { id: id, status: status },
+                    success: function (res) {
+                        if (res > 0) {
+                            $.ajax({
+                                type: 'post',
+                                url: 'controller/mark_date.php?action=done',
+                                data: { id: id },
+                                success: function () {
+                                    Swal.fire({
+                                        title: "Done!",
+                                        text: "The task has been successfully done.",
+                                        icon: "success"
+                                    });
+                                    getlogs_data(id);
+                                    // display task
+                                    getTask();
+                                }
+                            })
+                        }
+                    }
+                })
+            }
+        });
+    })
 
     $(document).on('submit', '#date_created_taskForm', function (e) {
         e.preventDefault();
